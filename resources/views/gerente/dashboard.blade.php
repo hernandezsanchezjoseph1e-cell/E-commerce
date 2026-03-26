@@ -13,11 +13,7 @@
                 </a>
             </div>
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                <a href="{{ route('users.index') }}" class="text-blue-600 underline">
-                    Gestionar productos
-                </a>
-            </div>
+            
         </div>
     </div>
 </x-app-layout>

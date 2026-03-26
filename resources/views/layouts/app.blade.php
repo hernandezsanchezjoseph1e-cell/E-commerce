@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Quessini') }}</title>
+        <title>{{ $title ?? 'Quessini' }}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -16,7 +16,15 @@
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
+            @auth
+                @if(auth()->user()->role === 'gerente')
+                    @include('layouts.navbars.gerente')
+                @elseif(auth()->user()->role === 'empleado')
+                    @include('layouts.navbars.empleado')
+                @else
+                    @include('layouts.navbars.cliente')
+                @endif
+            @endauth
 
             <!-- Page Heading -->
             @isset($header)

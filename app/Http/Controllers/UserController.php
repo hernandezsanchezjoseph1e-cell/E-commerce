@@ -9,16 +9,16 @@ use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
 {
     // Solo el gerente puede gestionar usuarios
-    public function __construct()
+    /*public function __construct()
     {
         $this->middleware('role:gerente');
-    }
+    }*/
 
     // Lista todos los usuarios
     public function index()
     {
         $users = User::orderBy('name')->paginate(15);
-        return view('users.index', compact('users'));
+        return view('gerente.users.index', compact('users'));
     }
 
     // Formulario para crear usuario
@@ -29,7 +29,7 @@ class UserController extends Controller
             User::ROLE_EMPLEADO,
             User::ROLE_GERENTE,
         ];
-        return view('users.create', compact('roles'));
+        return view('gerente.users.create', compact('roles'));
     }
 
     // Guarda el usuario nuevo
@@ -58,7 +58,7 @@ class UserController extends Controller
             User::ROLE_EMPLEADO,
             User::ROLE_GERENTE,
         ];
-        return view('users.edit', compact('user', 'roles'));
+        return view('gerente.users.edit', compact('user', 'roles'));
     }
 
     // Actualiza el usuario
