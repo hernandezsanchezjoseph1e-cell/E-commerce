@@ -6,11 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
-
-Route::get('/welcome', function () {
-    return view('welcome');
-})->middleware(['auth', 'verified'])->name('welcome');
+})->name('inicio');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -18,29 +14,25 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Dashboard Cliente
-Route::middleware(['auth', 'role:cliente'])->group(function () {
-    Route::get('/dashboard/cliente', function () {
-        return view('dashboard.cliente');
-    })->name('dashboard.cliente');
+Route::middleware(['auth'])->group(function () {
+
+    Route::prefix('cliente')->middleware('role:cliente')->group(function () {
+        Route::get('/dashboard', fn() => view('cliente.dashboard'))
+            ->name('dashboard.cliente');
+    });
+
+    Route::prefix('empleado')->middleware('role:empleado')->group(function () {
+        Route::get('/dashboard', fn() => view('empleado.dashboard'))
+            ->name('dashboard.empleado');
+    });
+
+    Route::prefix('gerente')->middleware('role:gerente')->group(function () {
+        Route::get('/dashboard', fn() => view('gerente.dashboard'))
+            ->name('dashboard.gerente');
+
+        Route::resource('users', UserController::class);
+    });
+
 });
-
-// Dashboard Empleado
-Route::middleware(['auth', 'role:empleado'])->group(function () {
-    Route::get('/dashboard/empleado', function () {
-        return view('dashboard.empleado');
-    })->name('dashboard.empleado');
-});
-
-// Dashboard Gerente + gestión de usuarios
-Route::middleware(['auth', 'role:gerente'])->group(function () {
-    Route::get('/dashboard/gerente', function () {
-        return view('dashboard.gerente');
-    })->name('dashboard.gerente');
-
-    Route::resource('users', UserController::class)->except(['show']);
-});
-
-
 
 require __DIR__.'/auth.php';
