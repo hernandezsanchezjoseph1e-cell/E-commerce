@@ -1,20 +1,4 @@
-<<<<<<< HEAD
-    <x-app-layout>
-        <x-slot name="header">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Bienvenido, {{ auth()->user()->name }}
-            </h2>
-        </x-slot>
 
-        <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                    Aquí verás tus pedidos y favoritos.
-                </div>
-            </div>
-        </div>
-    </x-app-layout>
-=======
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -30,4 +14,4 @@
         </div>
     </div>
 </x-app-layout>
->>>>>>> da64e1f5e1b6f3e01e0cab36df2ea2ee85aa718d
+
