@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-//notifiable
+//Authenticatable permite que el usuario pueda iniciar sesion
 
 class User extends Authenticatable
 {
@@ -16,12 +16,13 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     // Roles disponibles como constantes (evita typos)
-    const ROLE_CLIENTE  = 'cliente';
-    const ROLE_EMPLEADO = 'empleado';
-    const ROLE_GERENTE  = 'gerente';
+    const ROLE_ADMIN  = 'administrador';
+    const ROLE_GERENTE = 'gerente';
+    const ROLE_CLIENTE = 'cliente';
 
     protected $fillable = [
-        'name',
+        'nombre',
+        'apellidos',
         'email',
         'password',
         'role',         
@@ -40,16 +41,11 @@ class User extends Authenticatable
         ];
     }
 
-    // Helpers de rol
+    // helpers
 
-    public function isCliente(): bool
+    public function isAdmin(): bool
     {
-        return $this->role === self::ROLE_CLIENTE;
-    }
-
-    public function isEmpleado(): bool
-    {
-        return $this->role === self::ROLE_EMPLEADO;
+        return $this->role === self::ROLE_ADMIN;
     }
 
     public function isGerente(): bool
@@ -57,26 +53,54 @@ class User extends Authenticatable
         return $this->role === self::ROLE_GERENTE;
     }
 
-    // Gerente puede hacer todo lo que hace un empleado también
+    public function isCliente(): bool
+    {
+        return $this->role === self::ROLE_CLIENTE;
+    }
+
     public function hasAdminAccess(): bool
     {
-        return in_array($this->role, [self::ROLE_EMPLEADO, self::ROLE_GERENTE]);
+        return in_array($this->role, [
+            self::ROLE_ADMIN,
+            self::ROLE_GERENTE
+        ]);
     }
 
-    //  Scopes (para filtrar en queries)
-
-    public function scopeClientes($query)
+    //Productos del usuarios
+    public function productos()
     {
-        return $query->where('role', self::ROLE_CLIENTE);
+        return $this->hasMany(Producto::class, 'usuario_id');
+    }
+    //Ventas como cliente
+    public function compras()
+    {
+        return $this->hasMany(Venta::class, 'cliente_id');
+    }
+    //Ventas como vendedor
+    public function ventas()
+    {
+        return $this->hasMany(Venta::class, 'vendedor_id');
+    }
+    
+    public function getCategoriasAttribute()
+    {
+        return $this->productos
+                    ->flatMap->categorias
+                    ->unique('id')
+                    ->values();
     }
 
-    public function scopeEmpleados($query)
+    //Estadisticas
+    public function getTotalVentasAttribute()
     {
-        return $query->where('role', self::ROLE_EMPLEADO);
+        return $this->ventas()->sum('total');
     }
 
-    public function scopeGerentes($query)
+    public function getTotalComprasAttribute()
     {
-        return $query->where('role', self::ROLE_GERENTE);
+        return $this->compras()->sum('total');
     }
+
+
+    
 }

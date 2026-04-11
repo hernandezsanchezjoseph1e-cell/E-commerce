@@ -1,17 +1,15 @@
+@extends('layouts.app')
 
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Bienvenido, {{ auth()->user()->name }}
-        </h2>
-    </x-slot>
+@section('title','Mi cuenta')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                Aquí verás tus pedidos y favoritos.
-            </div>
-        </div>
-    </div>
-</x-app-layout>
+@section('content')
 
+<h2 class="text-xl font-semibold text-gray-800 mb-6">
+    Bienvenido, {{ auth()->user()->nombre }} {{ auth()->user()->apellidos }}
+</h2>
+
+<div class="bg-white shadow-sm rounded-lg p-6">
+    Aquí verás tus pedidos y favoritos.
+</div>
+
+@endsection

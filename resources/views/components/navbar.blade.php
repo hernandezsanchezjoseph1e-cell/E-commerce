@@ -19,8 +19,8 @@
                 {{-- Si ya está logueado, botón a su dashboard --}}
                 @php
                     $dashboard = match(auth()->user()->role) {
-                        'gerente'  => 'dashboard.gerente',
-                        'empleado' => 'dashboard.empleado',
+                        'administrador'  => 'dashboard.administrador',
+                        'gerente' => 'dashboard.gerente',
                         default    => 'dashboard.cliente',
                     };
                 @endphp
