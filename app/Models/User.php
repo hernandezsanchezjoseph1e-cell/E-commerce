@@ -9,7 +9,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 //Authenticatable permite que el usuario pueda iniciar sesion
-
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */

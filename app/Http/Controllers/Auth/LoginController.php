@@ -25,15 +25,14 @@ class LoginController extends Controller
     public function login(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
 
         $user = auth()->user();
 
         $redirect = match ($user->role) {
-        'administrador' => route('dashboard.administrador'),
-        'gerente'       => route('dashboard.gerente'),
-        default         => route('dashboard.cliente'),
+            'administrador' => route('dashboard.administrador'),
+            'gerente'       => route('dashboard.gerente'),
+            default         => route('dashboard.cliente'),
         };
 
         return redirect()->intended($redirect);
