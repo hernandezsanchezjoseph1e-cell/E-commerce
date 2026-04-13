@@ -26,7 +26,7 @@
                 <th class="p-2">Producto</th>
                 <th class="p-2">Cliente</th>
                 <th class="p-2">Vendedor</th>
-                <th class="p-2">Cantidad</th>
+                <th class="p-2">Fecha</th>
                 <th class="p-2">Total</th>
             </tr>
 

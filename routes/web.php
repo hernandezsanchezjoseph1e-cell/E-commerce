@@ -8,22 +8,13 @@ use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\VentaController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Página inicial
-|--------------------------------------------------------------------------
-*/
+//PAGINA INICIAL
 
 Route::get('/', function () {
     return view('welcome');
 })->name('inicio');
 
-
-/*
-|--------------------------------------------------------------------------
-| Perfil
-|--------------------------------------------------------------------------
-*/
+//Perfil
 
 Route::middleware('auth')->group(function () {
 
@@ -33,11 +24,7 @@ Route::middleware('auth')->group(function () {
 });
 
 
-/*
-|--------------------------------------------------------------------------
-| CLIENTE
-|--------------------------------------------------------------------------
-*/
+//CLIENTE
 
 Route::middleware(['auth', 'role:cliente'])->prefix('cliente')->group(function () {
 
@@ -48,12 +35,7 @@ Route::middleware(['auth', 'role:cliente'])->prefix('cliente')->group(function (
         ->name('cliente.productos.index');
 });
 
-
-/*
-|--------------------------------------------------------------------------
-| INVENTARIO (ADMIN + GERENTE)
-|--------------------------------------------------------------------------
-*/
+//INVENTARIO (ADMIN + GERENTE)
 
 Route::middleware(['auth', 'role:administrador,gerente'])->group(function () {
 
@@ -63,13 +45,7 @@ Route::middleware(['auth', 'role:administrador,gerente'])->group(function () {
     Route::get('/categorias', [CategoriaController::class, 'index'])->name('categorias.index');
 });
 
-
-/*
-|--------------------------------------------------------------------------
-| GERENTE
-|--------------------------------------------------------------------------
-*/
-
+//GERENTE
 Route::middleware(['auth', 'role:gerente'])->prefix('gerente')->group(function () {
 
     Route::get('/dashboard', fn() => view('gerente.dashboard'))
@@ -99,12 +75,7 @@ Route::middleware(['auth', 'role:gerente'])->prefix('gerente')->group(function (
 });
 
 
-/*
-|--------------------------------------------------------------------------
-| ADMINISTRADOR
-|--------------------------------------------------------------------------
-*/
-
+// ADMIN
 Route::middleware(['auth', 'role:administrador'])->prefix('administrador')->group(function () {
 
     Route::get('/dashboard', fn() => view('administrador.dashboard'))

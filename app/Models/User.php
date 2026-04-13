@@ -25,7 +25,7 @@ class User extends Authenticatable
         'apellidos',
         'email',
         'password',
-        'role',         
+        'role',
     ];
 
     protected $hidden = [
@@ -81,26 +81,23 @@ class User extends Authenticatable
     {
         return $this->hasMany(Venta::class, 'vendedor_id');
     }
-    
-    public function getCategoriasAttribute()
+
+    public function getCategoriasVendidasAttribute()
     {
         return $this->productos
-                    ->flatMap->categorias
-                    ->unique('id')
-                    ->values();
+            ->flatMap->categorias
+            ->unique('id')
+            ->values();
     }
 
-    //Estadisticas
-    public function getTotalVentasAttribute()
+    //Para obtener estadisticas
+    public function totalVentas()
     {
         return $this->ventas()->sum('total');
     }
 
-    public function getTotalComprasAttribute()
+    public function totalCompras()
     {
         return $this->compras()->sum('total');
     }
-
-
-    
 }
