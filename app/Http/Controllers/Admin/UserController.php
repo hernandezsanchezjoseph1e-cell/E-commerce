@@ -32,6 +32,7 @@ class UserController extends Controller
     public function store(StoreUserRequest $request)
     {
         $this->authorize('create', User::class);
+
         $data = $request->validated();
         $data['password'] = Hash::make($data['password']);
 
@@ -60,6 +61,8 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request, User $usuario)
     {
         $this->authorize('update', $usuario);
+
+        $data = $request->validated();
 
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);

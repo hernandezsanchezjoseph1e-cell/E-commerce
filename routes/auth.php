@@ -23,6 +23,13 @@ Route::middleware('guest')->group(function () {
 
     Route::post('/login', [LoginController::class, 'login']);
 
+    // Verificación OTP - va dentro del grupo middleware('guest')
+    Route::get('/verificar-otp', [LoginController::class, 'showVerificacion'])
+        ->name('2fa.show');
+
+    Route::post('/verificar-otp', [LoginController::class, 'verificar'])
+        ->name('2fa.verificar');
+
     // Recuperar contraseña
     Route::get('/forgot-password', [PasswordResetController::class, 'showForgotPassword'])
         ->name('password.request');
@@ -35,7 +42,6 @@ Route::middleware('guest')->group(function () {
 
     Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])
         ->name('password.store');
-
 });
 
 
@@ -50,14 +56,13 @@ Route::middleware('auth')->group(function () {
         ->name('verification.send');
 
     Route::get('/verify-email/{id}/{hash}', [EmailVerificationController::class, 'verify'])
-        ->middleware(['signed','throttle:6,1'])
+        ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
-        
+
     Route::put('/password', [PasswordController::class, 'update'])
         ->name('password.update');
 
     // Logout
     Route::post('/logout', [LoginController::class, 'logout'])
         ->name('logout');
-
 });

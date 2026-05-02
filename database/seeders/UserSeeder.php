@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
         User::create([
             'nombre' => 'Admin',
             'apellidos' => 'Sistema',
-            'email' => 'admin@tuxtla.tecnm.mx',
+            'email' => 'hernandezsanchezjoseph1e@gmail.com',
             'password' => Hash::make('123'),
             'role' => 'administrador'
         ]);

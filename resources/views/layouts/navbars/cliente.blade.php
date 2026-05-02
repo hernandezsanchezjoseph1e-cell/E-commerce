@@ -3,10 +3,9 @@
 @section('menu')
 
 <a href="#" class="text-gray-600 hover:text-gray-900">
-    Ver productos
+    Mis productos
 </a>
 <a href="#" class="text-gray-600 hover:text-gray-900">
-    Comprar
+    Carrito
 </a>
-
 @endsection

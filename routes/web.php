@@ -7,6 +7,7 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\VentaController;
 use Illuminate\Support\Facades\Route;
+use App\Models\Categoria;
 
 //PAGINA INICIAL
 
@@ -28,8 +29,14 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'role:cliente'])->prefix('cliente')->group(function () {
 
-    Route::get('/dashboard', fn() => view('cliente.dashboard'))
-        ->name('dashboard.cliente');
+    Route::get('/dashboard', function () {
+
+        $categorias = Categoria::with(['productos' => function ($query) {
+            $query->where('existencia', '>', 0);
+        }])->get();
+
+        return view('cliente.dashboard', compact('categorias'));
+    })->name('dashboard.cliente');
 
     Route::get('/productos', [ProductoController::class, 'index'])
         ->name('cliente.productos.index');
@@ -67,6 +74,8 @@ Route::middleware(['auth', 'role:gerente'])->prefix('gerente')->group(function (
     Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');
     Route::get('/ventas/create', [VentaController::class, 'create'])->name('ventas.create');
     Route::post('/ventas', [VentaController::class, 'store'])->name('ventas.store');
+    Route::get('/ventas/{venta}/ticket', [VentaController::class, 'ticket'])
+        ->name('ventas.ticket');
 
     // CLIENTES
     Route::get('/clientes', [ClienteController::class, 'index'])->name('clientes.index');
