@@ -6,6 +6,7 @@ use App\Models\Producto;
 use App\Models\Categoria;
 use App\Http\Requests\Producto\StoreProductoRequest;
 use App\Http\Requests\Producto\UpdateProductoRequest;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -50,6 +51,13 @@ class ProductoController extends Controller
 
         $producto->categorias()->sync($request->categorias ?? []);
 
+        Log::channel('productos')->info('Producto creado', [
+            'producto_id' => $producto->id,
+            'nombre' => $producto->nombre,
+            'usuario_id' => auth()->id(),
+            'usuario_email' => auth()->user()->email,
+        ]);
+
         return redirect()->route('productos.index');
     }
 
@@ -92,6 +100,13 @@ class ProductoController extends Controller
 
         $producto->categorias()->sync($request->categorias ?? []);
 
+        Log::channel('productos')->info('Producto actualizado', [
+            'producto_id' => $producto->id,
+            'nombre' => $producto->nombre,
+            'usuario_id' => auth()->id(),
+            'usuario_email' => auth()->user()->email,
+        ]);
+
         return redirect()->route('productos.index');
     }
 
@@ -99,6 +114,12 @@ class ProductoController extends Controller
     {
         $this->authorize('delete', $producto);
 
+        Log::channel('productos')->info('Producto eliminado', [
+            'producto_id' => $producto->id,
+            'nombre' => $producto->nombre,
+            'usuario_id' => auth()->id(),
+            'usuario_email' => auth()->user()->email,
+        ]);
         if ($producto->fotos) {
             foreach ($producto->fotos as $foto) {
                 Storage::disk('public')->delete($foto);
