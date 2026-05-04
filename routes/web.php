@@ -6,17 +6,19 @@ use App\Http\Controllers\Gerente\ClienteController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\VentaController;
+use App\Http\Controllers\Admin\EstadisticaController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Categoria;
 
 //PAGINA INICIAL
-
 Route::get('/', function () {
     return view('welcome');
 })->name('inicio');
 
-//Perfil
 
+
+
+//Perfil
 Route::middleware('auth')->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -26,7 +28,6 @@ Route::middleware('auth')->group(function () {
 
 
 //CLIENTE
-
 Route::middleware(['auth', 'role:cliente'])->prefix('cliente')->group(function () {
 
     Route::get('/dashboard', function () {
@@ -40,17 +41,35 @@ Route::middleware(['auth', 'role:cliente'])->prefix('cliente')->group(function (
 
     Route::get('/productos', [ProductoController::class, 'index'])
         ->name('cliente.productos.index');
+
+    Route::get('/ventas', [VentaController::class, 'index'])
+        ->name('cliente.ventas.index');
 });
+
+
+
+
+Route::middleware(['auth'])->group(function () {
+
+    // acceso a ticket controlado por Policy
+    Route::get('/ventas/{venta}/ticket', [VentaController::class, 'ticket'])
+        ->name('ventas.ticket');
+});
+
+
+
+
 
 //INVENTARIO (ADMIN + GERENTE)
-
 Route::middleware(['auth', 'role:administrador,gerente'])->group(function () {
 
+    // INVENTARIO
     Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
-    Route::get('/productos/{producto}', [ProductoController::class, 'show'])->name('productos.show');
-
     Route::get('/categorias', [CategoriaController::class, 'index'])->name('categorias.index');
 });
+
+
+
 
 //GERENTE
 Route::middleware(['auth', 'role:gerente'])->prefix('gerente')->group(function () {
@@ -74,8 +93,8 @@ Route::middleware(['auth', 'role:gerente'])->prefix('gerente')->group(function (
     Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');
     Route::get('/ventas/create', [VentaController::class, 'create'])->name('ventas.create');
     Route::post('/ventas', [VentaController::class, 'store'])->name('ventas.store');
-    Route::get('/ventas/{venta}/ticket', [VentaController::class, 'ticket'])
-        ->name('ventas.ticket');
+    Route::patch('/ventas/{venta}/validar', [VentaController::class, 'validar'])
+        ->name('ventas.validar');
 
     // CLIENTES
     Route::get('/clientes', [ClienteController::class, 'index'])->name('clientes.index');
@@ -87,7 +106,7 @@ Route::middleware(['auth', 'role:gerente'])->prefix('gerente')->group(function (
 // ADMIN
 Route::middleware(['auth', 'role:administrador'])->prefix('administrador')->group(function () {
 
-    Route::get('/dashboard', fn() => view('administrador.dashboard'))
+    Route::get('/dashboard', [EstadisticaController::class, 'index'])
         ->name('dashboard.administrador');
 
     // USUARIOS

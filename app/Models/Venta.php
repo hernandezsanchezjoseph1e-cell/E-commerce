@@ -11,7 +11,9 @@ class Venta extends Model
         'vendedor_id',
         'cliente_id',
         'fecha',
-        'total'
+        'total',
+        'ticket',
+        'validada'
     ];
 
     public function producto()

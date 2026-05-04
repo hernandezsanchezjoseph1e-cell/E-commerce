@@ -13,6 +13,10 @@
         Aquí verás tus pedidos y favoritos.
     </div>
 
+    <a href="{{ route('cliente.ventas.index') }}">
+        Mis compras
+    </a>
+
     @foreach($categorias as $categoria)
     @include('cliente.components.categoria', ['categoria' => $categoria])
     @endforeach

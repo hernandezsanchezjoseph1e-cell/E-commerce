@@ -7,6 +7,9 @@ use App\Models\Producto;
 use App\Models\User;
 use App\Http\Requests\Venta\StoreVentaRequest;
 use Illuminate\Support\Facades\Storage;
+use App\Mail\Ventas\VentaValidadaVendedorMail;
+use App\Mail\Ventas\VentaValidadaCompradorMail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class VentaController extends Controller
@@ -14,8 +17,19 @@ class VentaController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Venta::class);
-        $ventas = Venta::with(['producto', 'cliente', 'vendedor'])->get();
-        return view('ventas.index', compact('ventas'));
+
+        $user = auth()->user();
+
+        $ventas = Venta::with(['producto', 'cliente', 'vendedor'])
+            ->when($user->role === 'cliente', function ($query) use ($user) {
+                $query->where('cliente_id', $user->id);
+            })
+            ->get();
+
+        return view(
+            $user->role === 'cliente' ? 'cliente.ventas' : 'ventas.index',
+            compact('ventas')
+        );
     }
 
     public function create()
@@ -27,6 +41,7 @@ class VentaController extends Controller
         return view('ventas.create', compact('productos', 'clientes'));
     }
 
+
     public function store(StoreVentaRequest $request)
     {
         $this->authorize('create', Venta::class);
@@ -37,20 +52,28 @@ class VentaController extends Controller
             throw new \Exception('Sin inventario');
         }
 
-        $ticketPath = null;
+        $user = auth()->user();
+
+        // AQUÍ SE DEFINE BIEN EL CLIENTE
+        $clienteId = $user->role === 'cliente'
+            ? $user->id
+            : $request->cliente_id;
+
+        $path = null;
 
         if ($request->hasFile('ticket')) {
             $nombre = Str::uuid() . '.' . $request->file('ticket')->getClientOriginalExtension();
-            $ticketPath = $request->file('ticket')->storeAs('tickets', $nombre, 'private');
+            $path = $request->file('ticket')->storeAs('tickets', $nombre, 'private');
         }
 
         Venta::create([
             'producto_id' => $producto->id,
-            'cliente_id' => $request->cliente_id,
-            'vendedor_id' => auth()->id(),
+            'cliente_id' => $clienteId,
+            'vendedor_id' => $user->id,
             'fecha' => now(),
             'total' => $producto->precio,
-            'ticket' => $ticketPath
+            'ticket' => $path,
+            'validada' => false
         ]);
 
         $producto->decrement('existencia');
@@ -58,9 +81,10 @@ class VentaController extends Controller
         return redirect()->route('ventas.index');
     }
 
+
     public function ticket(Venta $venta)
     {
-        $this->authorize('view', $venta);
+        $this->authorize('viewTicket', $venta);
 
         if (!$venta->ticket || !Storage::disk('private')->exists($venta->ticket)) {
             abort(404);
@@ -69,5 +93,25 @@ class VentaController extends Controller
         return response()->file(
             storage_path('app/private/' . $venta->ticket)
         );
+    }
+
+    public function validar(Venta $venta)
+    {
+        $this->authorize('update', $venta);
+
+        $venta->update(['validada' => true]);
+
+        // Cargar relaciones necesarias para los correos
+        $venta->load(['producto', 'cliente', 'vendedor']);
+
+        // Correo al vendedor
+        Mail::to($venta->vendedor->email)
+            ->send(new VentaValidadaVendedorMail($venta));
+
+        // Correo al comprador
+        Mail::to($venta->cliente->email)
+            ->send(new VentaValidadaCompradorMail($venta));
+
+        return back()->with('success', 'Venta validada y notificaciones enviadas.');
     }
 }

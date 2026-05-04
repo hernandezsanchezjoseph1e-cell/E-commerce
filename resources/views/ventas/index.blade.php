@@ -20,7 +20,6 @@
     <table class="w-full border">
 
         <thead class="bg-gray-200">
-
             <tr>
                 <th class="p-2">ID</th>
                 <th class="p-2">Producto</th>
@@ -28,8 +27,8 @@
                 <th class="p-2">Vendedor</th>
                 <th class="p-2">Fecha</th>
                 <th class="p-2">Total</th>
+                <th class="p-2">Acciones</th>
             </tr>
-
         </thead>
 
         <tbody>
@@ -49,6 +48,48 @@
                 <td class="p-2">{{ $venta->fecha }}</td>
 
                 <td class="p-2">${{ $venta->total }}</td>
+
+                <td class="p-2">
+
+                    {{-- VER TICKET --}}
+                    @if($venta->ticket)
+                    <a href="{{ route('ventas.ticket', $venta) }}"
+                        class="bg-blue-500 text-white px-2 py-1 rounded">
+                        Ver ticket
+                    </a>
+                    @else
+                    <span class="text-gray-500">Sin ticket</span>
+                    @endif
+
+                    {{-- VALIDAR VENTA (solo gerente) --}}
+                    @can('update', $venta)
+
+                    @if(!$venta->validada)
+
+                    <form action="{{ route('ventas.validar', $venta) }}"
+                        method="POST"
+                        style="display:inline;">
+
+                        @csrf
+                        @method('PATCH')
+
+                        <button class="bg-green-600 text-white px-2 py-1 rounded ml-2">
+                            Validar
+                        </button>
+
+                    </form>
+
+                    @else
+
+                    <span class="text-green-700 font-bold ml-2">
+                        ✔ Validada
+                    </span>
+
+                    @endif
+
+                    @endcan
+
+                </td>
                 </td>
 
             </tr>

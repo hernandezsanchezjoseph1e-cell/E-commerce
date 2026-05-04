@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title','Mi cuenta')
+@section('title','Dashboard Administrador')
 
 @section('content')
 
@@ -8,9 +8,15 @@
     Panel Administrador - {{ auth()->user()->nombre }} {{ auth()->user()->apellidos }}
 </h2>
 
-<div class="bg-white shadow-sm rounded-lg p-6">
+<div class="p-6 space-y-6">
 
+    @include('administrador.partials.resumen')
 
+    @include('administrador.partials.productos-categoria')
+
+    @include('administrador.partials.top-producto')
+
+    @include('administrador.partials.top-comprador')
 
 </div>
 

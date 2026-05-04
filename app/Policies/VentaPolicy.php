@@ -8,19 +8,28 @@ use Illuminate\Auth\Access\Response;
 
 class VentaPolicy
 {
-    // Admin y gerente ven ventas
+    // Todos lo usuarios ven ventas
     public function viewAny(User $auth): bool
     {
-        return in_array($auth->role, ['administrador', 'gerente']);
+        return in_array($auth->role, ['administrador', 'gerente', 'cliente']);
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
     public function view(User $user, Venta $venta): bool
     {
-        return false;
+        return
+            in_array($user->role, ['administrador', 'gerente']) ||
+            $user->id === $venta->cliente_id;
     }
+
+
+    public function viewTicket(User $user, Venta $venta): bool
+    {
+        return
+            $user->role === 'administrador' ||
+            $user->role === 'gerente' ||
+            $user->id === $venta->cliente_id;
+    }
+
 
     // Solo gerente registra ventas (él es el vendedor)
     public function create(User $auth): bool
@@ -28,11 +37,9 @@ class VentaPolicy
         return $auth->role === 'gerente';
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
+    // Solo gerente puede validar venta
     public function update(User $user, Venta $venta): bool
     {
-        return false;
+        return $user->role === 'gerente';
     }
 }

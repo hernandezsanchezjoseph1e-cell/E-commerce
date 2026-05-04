@@ -15,9 +15,9 @@ class StoreVentaRequest extends FormRequest
     {
         return [
             'producto_id' => ['required', 'integer', 'exists:productos,id'],
-            'cliente_id'  => ['required', 'integer', 'exists:users,id'],
+            'cliente_id' => ['nullable', 'integer', 'exists:users,id'],
             'fecha'       => ['nullable', 'date'],
-            'ticket' => ['nullable|image|mimes:jpg,jpeg,png|max:2048'],
+            'ticket' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ];
     }
 
