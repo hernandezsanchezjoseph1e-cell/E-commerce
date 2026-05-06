@@ -9,14 +9,13 @@ class UserFactory extends Factory
 {
     public function definition(): array
     {
-        $nombres = ['Juan', 'Mario', 'Maria', 'Pedro'];
-        $apellidos = ['Lopez', 'Sanchez', 'Hernandez', 'Martinez'];
+        $nombres = ['Juan', 'Mario', 'Maria', 'Pedro', 'Ana', 'Luis', 'Carmen', 'Jose', 'Rosa', 'Miguel'];
+        $apellidos = ['Lopez', 'Sanchez', 'Hernandez', 'Martinez', 'Garcia', 'Perez', 'Rodriguez', 'Gonzalez', 'Fernandez', 'Morales'];
 
         $nombre = $this->faker->randomElement($nombres);
         $apellido = $this->faker->randomElement($apellidos);
 
-        $email = strtolower(substr($nombre, 0, 1) . $apellido)
-            . $this->faker->unique()->numberBetween(1, 999)
+        $email = strtolower(substr($nombre, 0, 1) . $apellido . $this->faker->unique()->numberBetween(1, 9999))
             . '@tuxtla.tecnm.mx';
 
         return [
@@ -28,5 +27,10 @@ class UserFactory extends Factory
             'role' => $this->faker->randomElement(['cliente', 'gerente'])
 
         ];
+    }
+
+    public function role(string $role)
+    {
+        return $this->state(['role' => $role]);
     }
 }

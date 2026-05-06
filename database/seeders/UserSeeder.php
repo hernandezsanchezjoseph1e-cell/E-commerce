@@ -15,12 +15,15 @@ class UserSeeder extends Seeder
         User::create([
             'nombre' => 'Admin',
             'apellidos' => 'Sistema',
-            'email' => 'hernandezsanchezjoseph1e@gmail.com',
+            'email' => 'joshuafaridmejia@gmail.com',
             'password' => Hash::make('123'),
             'role' => 'administrador'
         ]);
 
-        // usuarios generados por factory
-        User::factory()->count(10)->create();
+        // 30 vendedores (gerentes)
+        User::factory()->count(30)->create(['role' => 'gerente']);
+
+        // 70 compradores (clientes)
+        User::factory()->count(70)->create(['role' => 'cliente']);
     }
 }
