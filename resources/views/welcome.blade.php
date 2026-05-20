@@ -5,7 +5,7 @@
 {{-- HERO --}}
 <section class="bg-gray-50 py-28 px-6 text-center">
     <p class="text-sm font-semibold tracking-widest text-gray-400 uppercase mb-4">
-        Nueva colección 2025
+        Nueva colección 2026
     </p>
     <h1 class="text-5xl font-bold text-gray-900 leading-tight mb-6">
         Viste lo que <br class="hidden md:block"> realmente eres.
