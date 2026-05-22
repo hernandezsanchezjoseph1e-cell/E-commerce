@@ -2,6 +2,14 @@
 
 @section('menu')
 
+@php
+$ventasPendientes = \App\Models\Venta::where('vendedor_id', auth()->id())
+->where('validada', false)
+->whereNotNull('referencia_pago')
+->distinct()
+->count('referencia_pago');
+@endphp
+
 <a href="{{ route('clientes.index') }}" class="text-gray-600 hover:text-gray-900">
     Clientes
 </a>
@@ -14,8 +22,9 @@
     Categorías
 </a>
 
-<a href="{{ route('ventas.create') }}" class="text-gray-600 hover:text-gray-900">
+<a href="{{ route('ventas.index') }}" class="text-gray-600 hover:text-gray-900">
     Venta
 </a>
+
 
 @endsection

@@ -8,14 +8,23 @@ use App\Http\Requests\Producto\StoreProductoRequest;
 use App\Http\Requests\Producto\UpdateProductoRequest;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class ProductoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', Producto::class);
-        $productos = Producto::with(['usuario', 'categorias'])->get();
+
+        $productos = Producto::with(['usuario', 'categorias'])
+            ->search($request->search)
+            ->categoria($request->categoria)
+            ->stock($request->stock)
+            ->orderBy('id', 'desc')
+            ->paginate(15)
+            ->withQueryString();
+
         return view('productos.index', compact('productos'));
     }
 

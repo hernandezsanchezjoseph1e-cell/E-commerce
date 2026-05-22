@@ -19,10 +19,6 @@
             class="bg-gray-900 text-white px-8 py-3 rounded-lg font-medium hover:bg-gray-700 transition">
             Ver catálogo
         </a>
-        <a href="{{ route('register') }}"
-            class="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition">
-            Crear cuenta gratis
-        </a>
     </div>
 </section>
 

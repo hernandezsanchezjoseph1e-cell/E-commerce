@@ -2,15 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Venta;
-use App\Models\Producto;
-use App\Models\User;
-use App\Http\Requests\Venta\StoreVentaRequest;
-use Illuminate\Support\Facades\Storage;
-use App\Mail\Ventas\VentaValidadaVendedorMail;
 use App\Mail\Ventas\VentaValidadaCompradorMail;
+use App\Mail\Ventas\VentaValidadaVendedorMail;
+use App\Models\Venta;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class VentaController extends Controller
 {
@@ -21,13 +17,21 @@ class VentaController extends Controller
         $user = auth()->user();
 
         $ventas = Venta::with(['producto', 'cliente', 'vendedor'])
-            ->when($user->role === 'cliente', function ($query) use ($user) {
+            ->when($user->isCliente(), function ($query) use ($user) {
                 $query->where('cliente_id', $user->id);
             })
+            ->when($user->isGerente(), function ($query) use ($user) {
+                $query->where('vendedor_id', $user->id)
+                    ->where('validada', true);
+            })
+            ->when($user->isAdmin(), function ($query) {
+                $query->where('validada', true);
+            })
+            ->latest()
             ->get();
 
         return view(
-            $user->role === 'cliente' ? 'cliente.ventas' : 'ventas.index',
+            $user->isCliente() ? 'cliente.ventas' : 'ventas.index',
             compact('ventas')
         );
     }
@@ -35,52 +39,22 @@ class VentaController extends Controller
     public function create()
     {
         $this->authorize('create', Venta::class);
-        $productos = Producto::all();
-        $clientes = User::where('role', 'cliente')->get();
 
-        return view('ventas.create', compact('productos', 'clientes'));
+        /*
+         | Esta vista ya no crea una venta manual.
+         | Ahora muestra compras pendientes agrupadas por referencia de pago.
+         */
+        $ventas = Venta::with(['producto', 'cliente', 'vendedor'])
+            ->where('vendedor_id', auth()->id())
+            ->where('validada', false)
+            ->latest()
+            ->get()
+            ->groupBy(function ($venta) {
+                return $venta->referencia_pago ?? 'SIN_REFERENCIA_' . $venta->id;
+            });
+
+        return view('ventas.create', compact('ventas'));
     }
-
-
-    public function store(StoreVentaRequest $request)
-    {
-        $this->authorize('create', Venta::class);
-
-        $producto = Producto::findOrFail($request->producto_id);
-
-        if ($producto->existencia <= 0) {
-            throw new \Exception('Sin inventario');
-        }
-
-        $user = auth()->user();
-
-        // AQUÍ SE DEFINE BIEN EL CLIENTE
-        $clienteId = $user->role === 'cliente'
-            ? $user->id
-            : $request->cliente_id;
-
-        $path = null;
-
-        if ($request->hasFile('ticket')) {
-            $nombre = Str::uuid() . '.' . $request->file('ticket')->getClientOriginalExtension();
-            $path = $request->file('ticket')->storeAs('tickets', $nombre, 'private');
-        }
-
-        Venta::create([
-            'producto_id' => $producto->id,
-            'cliente_id' => $clienteId,
-            'vendedor_id' => $user->id,
-            'fecha' => now(),
-            'total' => $producto->precio,
-            'ticket' => $path,
-            'validada' => false
-        ]);
-
-        $producto->decrement('existencia');
-
-        return redirect()->route('ventas.index');
-    }
-
 
     public function ticket(Venta $venta)
     {
@@ -99,19 +73,44 @@ class VentaController extends Controller
     {
         $this->authorize('update', $venta);
 
-        $venta->update(['validada' => true]);
+        if ($venta->validada) {
+            return back()->with('success', 'La venta ya estaba registrada.');
+        }
 
-        // Cargar relaciones necesarias para los correos
-        $venta->load(['producto', 'cliente', 'vendedor']);
+        $query = Venta::with(['producto', 'cliente', 'vendedor'])
+            ->where('vendedor_id', auth()->id())
+            ->where('validada', false);
 
-        // Correo al vendedor
-        Mail::to($venta->vendedor->email)
-            ->send(new VentaValidadaVendedorMail($venta));
+        if ($venta->referencia_pago) {
+            $query->where('referencia_pago', $venta->referencia_pago);
+        } else {
+            $query->where('id', $venta->id);
+        }
 
-        // Correo al comprador
-        Mail::to($venta->cliente->email)
-            ->send(new VentaValidadaCompradorMail($venta));
+        $ventas = $query->get();
 
-        return back()->with('success', 'Venta validada y notificaciones enviadas.');
+        if ($ventas->isEmpty()) {
+            return back()->withErrors([
+                'venta' => 'No se encontraron ventas pendientes para registrar.',
+            ]);
+        }
+
+        Venta::whereIn('id', $ventas->pluck('id'))->update([
+            'validada' => true,
+        ]);
+
+        $ventas->each(function ($ventaConfirmada) {
+            $ventaConfirmada->validada = true;
+        });
+
+        $ventaBase = $ventas->first();
+
+        Mail::to($ventaBase->vendedor->email)
+            ->send(new VentaValidadaVendedorMail($ventas));
+
+        Mail::to($ventaBase->cliente->email)
+            ->send(new VentaValidadaCompradorMail($ventas));
+
+        return back()->with('success', 'Compra registrada correctamente y notificaciones enviadas.');
     }
 }

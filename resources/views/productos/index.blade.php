@@ -16,6 +16,41 @@
 
     </div>
 
+    <form method="GET" class="mb-4 flex gap-2">
+
+        <input type="text" name="search"
+            value="{{ request('search') }}"
+            placeholder="Buscar producto..."
+            class="border px-2 py-1 rounded">
+
+        <select name="categoria" class="border px-2 py-1 rounded">
+            <option value="">Todas las categorías</option>
+            @foreach(\App\Models\Categoria::all() as $cat)
+            <option value="{{ $cat->id }}"
+                {{ request('categoria') == $cat->id ? 'selected' : '' }}>
+                {{ $cat->nombre }}
+            </option>
+            @endforeach
+        </select>
+
+        <select name="stock"
+            class="border px-2 py-1 rounded">
+
+            <option value="">Stock</option>
+
+            <option value="bajo"
+                {{ request('stock') == 'bajo' ? 'selected' : '' }}>
+                Stock bajo
+            </option>
+
+        </select>
+
+        <button class="bg-blue-600 text-white px-3 py-1 rounded">
+            Filtrar
+        </button>
+
+    </form>
+
     <table class="w-full border border-gray-300">
         <thead class="bg-gray-200">
             <tr>
@@ -87,6 +122,9 @@
         </tbody>
 
     </table>
+    <div class="mt-4">
+        {{ $productos->links() }}
+    </div>
 
 </div>
 

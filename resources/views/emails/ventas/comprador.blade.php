@@ -1,24 +1,61 @@
-@component('mail::message')
-# Compra confirmada
+<h1>Compra confirmada</h1>
 
-Hola **{{ $venta->cliente->nombre }}**, tu compra ha sido confirmada exitosamente.
+<p>Tu compra ha sido confirmada correctamente.</p>
 
-## Detalle de tu compra
+<p>
+    <strong>Vendedor:</strong>
+    {{ $ventaBase->vendedor->nombre }} {{ $ventaBase->vendedor->apellidos }}
+</p>
 
-@component('mail::panel')
-**Producto:** {{ $producto->nombre }}
-**Total:** ${{ number_format($venta->total, 2) }}
-@endcomponent
+<p>
+    <strong>Correo del vendedor:</strong>
+    {{ $ventaBase->vendedor->email }}
+</p>
 
-## Datos del vendedor
+<p>
+    <strong>Fecha:</strong>
+    {{ $ventaBase->fecha->format('d/m/Y') }}
+</p>
 
-@component('mail::panel')
-**Nombre:** {{ $vendedor->nombre }} {{ $vendedor->apellidos }}
-**Email:** {{ $vendedor->email }}
-@endcomponent
+<p>
+    <strong>Referencia de pago:</strong>
+    {{ $ventaBase->referencia_pago ?? 'Sin referencia' }}
+</p>
 
-Para coordinar la entrega o resolver cualquier duda, contacta directamente
-a tu vendedor en: **{{ $vendedor->email }}**
+<p>
+    <strong>Método de pago:</strong>
+    {{ strtoupper($ventaBase->metodo_pago ?? 'No especificado') }}
+</p>
 
-{{ config('app.name') }}
-@endcomponent
+<h2>Productos comprados</h2>
+
+<table border="1" cellpadding="8" cellspacing="0" width="100%">
+    <thead>
+        <tr>
+            <th align="left">Producto</th>
+            <th align="center">Cantidad</th>
+            <th align="right">Precio unitario</th>
+            <th align="right">Subtotal</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach($ventas as $venta)
+        <tr>
+            <td>{{ $venta->producto->nombre }}</td>
+            <td align="center">{{ $venta->cantidad }}</td>
+            <td align="right">${{ number_format($venta->producto->precio, 2) }}</td>
+            <td align="right">${{ number_format($venta->total, 2) }}</td>
+        </tr>
+        @endforeach
+    </tbody>
+</table>
+
+<p>
+    <strong>Total de la compra:</strong>
+    ${{ number_format($total, 2) }}
+</p>
+
+<p>
+    Puedes contactar al vendedor mediante el correo indicado para dar seguimiento a tu compra.
+</p>

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('vendedor_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('cliente_id')->constrained('users')->cascadeOnDelete();
             $table->date('fecha');
+            $table->integer('cantidad')->default(1);
             $table->decimal('total', 10, 2);
             $table->timestamps();
         });

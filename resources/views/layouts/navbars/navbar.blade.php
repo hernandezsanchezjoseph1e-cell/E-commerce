@@ -5,7 +5,7 @@
         <div class="shrink-0 flex items-center">
             <a href="{{ route('inicio') }}">
                 <h1 class="text-3xl font-bold text-gray-800">
-                    Quessini
+                    Tech & Home
                 </h1>
             </a>
         </div>
