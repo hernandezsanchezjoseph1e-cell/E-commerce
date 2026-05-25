@@ -2,28 +2,31 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
     public function run(): void
     {
-
-        // administrador fijo
+        // Administrador fijo para datos iniciales del sistema
         User::create([
             'nombre' => 'Admin',
             'apellidos' => 'Sistema',
-            'email' => 'hernandezsanchezjoseph1e@gmail.com',
-            'password' => Hash::make('123'),
-            'role' => 'administrador'
+            'email' => 'admin@example.com',
+            'password' => Hash::make('password'),
+            'role' => User::ROLE_ADMIN,
         ]);
 
-        // 30 vendedores (gerentes)
-        User::factory()->count(30)->create(['role' => 'gerente']);
+        // 30 vendedores / gerentes
+        User::factory()->count(30)->create([
+            'role' => User::ROLE_GERENTE,
+        ]);
 
-        // 70 compradores (clientes)
-        User::factory()->count(70)->create(['role' => 'cliente']);
+        // 70 compradores / clientes
+        User::factory()->count(70)->create([
+            'role' => User::ROLE_CLIENTE,
+        ]);
     }
 }
