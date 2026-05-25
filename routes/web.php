@@ -7,6 +7,7 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\VentaController;
 use App\Http\Controllers\Admin\EstadisticaController;
+use App\Http\Controllers\CarritoController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Categoria;
 
@@ -44,6 +45,28 @@ Route::middleware(['auth', 'role:cliente'])->prefix('cliente')->group(function (
 
     Route::get('/ventas', [VentaController::class, 'index'])
         ->name('cliente.ventas.index');
+
+    // CARRITO
+    Route::get('/carrito', [CarritoController::class, 'index'])
+        ->name('carrito.index');
+
+    Route::post('/carrito/agregar/{producto}', [CarritoController::class, 'agregar'])
+        ->name('carrito.agregar');
+
+    Route::patch('/carrito/actualizar/{producto}', [CarritoController::class, 'actualizar'])
+        ->name('carrito.actualizar');
+
+    Route::delete('/carrito/eliminar/{producto}', [CarritoController::class, 'eliminar'])
+        ->name('carrito.eliminar');
+
+    Route::delete('/carrito/vaciar', [CarritoController::class, 'vaciar'])
+        ->name('carrito.vaciar');
+
+    Route::post('/carrito/comprar', [CarritoController::class, 'comprar'])
+        ->name('carrito.comprar');
+
+    Route::get('/carrito/comprobante/{referencia}', [CarritoController::class, 'comprobante'])
+        ->name('carrito.comprobante');
 });
 
 
@@ -92,7 +115,6 @@ Route::middleware(['auth', 'role:gerente'])->prefix('gerente')->group(function (
     // VENTAS
     Route::get('/ventas', [VentaController::class, 'index'])->name('ventas.index');
     Route::get('/ventas/create', [VentaController::class, 'create'])->name('ventas.create');
-    Route::post('/ventas', [VentaController::class, 'store'])->name('ventas.store');
     Route::patch('/ventas/{venta}/validar', [VentaController::class, 'validar'])
         ->name('ventas.validar');
 

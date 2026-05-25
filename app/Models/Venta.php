@@ -11,10 +11,23 @@ class Venta extends Model
         'vendedor_id',
         'cliente_id',
         'fecha',
+        'cantidad',
         'total',
+        'metodo_pago',
+        'referencia_pago',
+        'codigo_pago',
+        'fecha_limite_pago',
         'ticket',
-        'validada'
+        'validada',
     ];
+
+    protected $casts = [
+        'fecha' => 'date',
+        'fecha_limite_pago' => 'datetime',
+        'total' => 'decimal:2',
+        'validada' => 'boolean',
+    ];
+
 
     public function producto()
     {

@@ -1,10 +1,22 @@
-<div class="bg-white p-4 rounded shadow">
+<div class="bg-white shadow rounded p-6">
 
-    <h2 class="font-bold mb-3">Producto más vendido</h2>
+    <h3 class="font-bold mb-4">
+        Producto más vendido
+    </h3>
 
-    <div>
-        {{ $productoMasVendido->nombre ?? 'Sin datos' }}
-        ({{ $productoMasVendido->ventas_count ?? 0 }} ventas)
-    </div>
+    @if($productoMasVendido)
+
+    <p>
+        {{ $productoMasVendido->nombre }}
+        ({{ $productoMasVendido->unidades_vendidas ?? 0 }} unidades vendidas)
+    </p>
+
+    @else
+
+    <p class="text-gray-500">
+        No hay ventas registradas.
+    </p>
+
+    @endif
 
 </div>

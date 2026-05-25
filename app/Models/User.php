@@ -99,4 +99,24 @@ class User extends Authenticatable
     {
         return $this->compras()->sum('total');
     }
+
+
+    // Para hacer filtros en usuarios 
+    public function scopeRole($query, $role)
+    {
+        if ($role) {
+            $query->where('role', $role);
+        }
+    }
+
+    public function scopeSearch($query, $search)
+    {
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nombre', 'like', "%{$search}%")
+                    ->orWhere('apellidos', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+    }
 }

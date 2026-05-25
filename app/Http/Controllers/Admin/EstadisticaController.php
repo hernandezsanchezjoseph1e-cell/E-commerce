@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Venta;
 use App\Models\Categoria;
 use App\Models\Producto;
 use App\Models\User;
@@ -20,16 +19,17 @@ class EstadisticaController extends Controller
 
         $totalCompradores = User::where('role', User::ROLE_CLIENTE)->count();
 
-        $productosPorCategoria = Categoria::with('productos.ventas.cliente')->get();
+        $productosPorCategoria = Categoria::with([
+            'productos.ventas.cliente',
+        ])->get();
 
         $topCompradorPorCategoria = $productosPorCategoria->map(function ($categoria) {
-
             $clientes = [];
 
             foreach ($categoria->productos as $producto) {
                 foreach ($producto->ventas as $venta) {
                     $clientes[$venta->cliente_id] =
-                        ($clientes[$venta->cliente_id] ?? 0) + 1;
+                        ($clientes[$venta->cliente_id] ?? 0) + $venta->cantidad;
                 }
             }
 
@@ -43,15 +43,14 @@ class EstadisticaController extends Controller
             ];
         });
 
-        $productoMasVendido = Producto::withCount('ventas')
-            ->orderByDesc('ventas_count')
+        $productoMasVendido = Producto::withSum('ventas as unidades_vendidas', 'cantidad')
+            ->orderByDesc('unidades_vendidas')
             ->first();
 
         return view('administrador.dashboard', [
             'totalUsuarios' => $totalUsuarios,
             'totalVendedores' => $totalVendedores,
             'totalCompradores' => $totalCompradores,
-
             'productosPorCategoria' => $productosPorCategoria,
             'productoMasVendido' => $productoMasVendido,
             'topCompradorPorCategoria' => $topCompradorPorCategoria,
