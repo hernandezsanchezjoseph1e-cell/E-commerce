@@ -17,15 +17,17 @@ class ProductoController extends Controller
     {
         $this->authorize('viewAny', Producto::class);
 
+        $categorias = Categoria::orderBy('nombre')->get();
+
         $productos = Producto::with(['usuario', 'categorias'])
-            ->search($request->search)
-            ->categoria($request->categoria)
-            ->stock($request->stock)
+            ->search($request->input('search'))
+            ->categoria($request->input('categoria'))
+            ->stock($request->input('stock'))
             ->orderBy('id', 'desc')
             ->paginate(15)
             ->withQueryString();
 
-        return view('productos.index', compact('productos'));
+        return view('productos.index', compact('productos', 'categorias'));
     }
 
     public function create()

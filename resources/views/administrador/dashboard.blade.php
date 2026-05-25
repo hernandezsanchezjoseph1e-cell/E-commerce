@@ -1,14 +1,26 @@
 @extends('layouts.app')
 
-@section('title','Dashboard Administrador')
+@section('title', 'Dashboard Administrador | Tech & Home')
 
 @section('content')
 
-<h2 class="text-xl font-semibold text-gray-800 mb-6">
-    Panel Administrador - {{ auth()->user()->nombre }} {{ auth()->user()->apellidos }}
-</h2>
+<div class="app-page">
 
-<div class="p-6 space-y-6">
+    <div class="page-header-simple">
+        <p class="page-kicker">
+            Panel administrativo
+        </p>
+
+        <div>
+            <h1 class="page-title">
+                Bienvenido, {{ auth()->user()->nombre }} {{ auth()->user()->apellidos }}
+            </h1>
+
+            <p class="page-description">
+                Consulta el resumen general de usuarios, productos, categorías y ventas del sistema.
+            </p>
+        </div>
+    </div>
 
     @include('administrador.partials.resumen')
 

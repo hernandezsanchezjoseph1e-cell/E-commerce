@@ -18,8 +18,8 @@ class StoreProductoRequest extends FormRequest
             'descripcion' => ['nullable', 'string', 'max:1000'],
             'precio'      => ['required', 'numeric', 'min:0'],
             'existencia'  => ['required', 'integer', 'min:0'],
-            'fotos' => 'nullable|array',
-            'fotos.*' => 'image|mimes:jpg,jpeg,png|max:2048',
+            'fotos' => ['nullable', 'array'],
+            'fotos.*' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'categorias'  => ['nullable', 'array'],
             'categorias.*' => ['integer', 'exists:categorias,id'],
         ];

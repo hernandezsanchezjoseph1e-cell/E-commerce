@@ -1,67 +1,66 @@
 <section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            Información del perfil
-        </h2>
 
-        <p class="mt-1 text-sm text-gray-600">
-            Actualiza tu información personal.
-        </p>
-    </header>
-
-    <form method="POST" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="POST" action="{{ route('profile.update') }}" class="space-y-5" novalidate>
         @csrf
         @method('PATCH')
 
-        <div>
-            <label for="nombre" class="block text-sm font-medium text-gray-700">
-                Nombre
-            </label>
+        <div class="form-grid">
+            <div>
+                <label for="nombre" class="form-label">
+                    Nombre
+                </label>
 
-            <input
-                id="nombre"
-                name="nombre"
-                type="text"
-                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                value="{{ old('nombre', $user->nombre) }}"
-                required
-            >
+                <input id="nombre" name="nombre" type="text" value="{{ old('nombre', $user->nombre) }}" class="form-control">
 
-            @error('nombre')
-                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-            @enderror
+                @error('nombre')
+                <p class="form-error">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div>
+                <label for="apellidos" class="form-label">
+                    Apellidos
+                </label>
+
+                <input id="apellidos" name="apellidos" type="text" value="{{ old('apellidos', $user->apellidos) }}" class="form-control">
+
+                @error('apellidos')
+                <p class="form-error">{{ $message }}</p>
+                @enderror
+            </div>
         </div>
 
         <div>
-            <label for="email" class="block text-sm font-medium text-gray-700">
-                Email
+            <label for="email" class="form-label">
+                Correo electrónico
             </label>
 
-            <input
-                id="email"
-                name="email"
-                type="email"
-                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                value="{{ old('email', $user->email) }}"
-                required
-            >
+            <input id="email" name="email" type="email" value="{{ old('email', $user->email) }}" readonly class="form-control cursor-not-allowed bg-slate-100 text-slate-500">
 
-            @error('email')
-                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-            @enderror
+            <p class="mt-2 text-xs text-slate-500">
+                El correo electrónico no se puede modificar desde el perfil.
+            </p>
         </div>
 
-        <button
-            type="submit"
-            class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-        >
-            Guardar
-        </button>
+        <div>
+            <label for="role" class="form-label">
+                Rol
+            </label>
+
+            <input id="role" type="text" value="{{ ucfirst($user->role) }}" readonly class="form-control cursor-not-allowed bg-slate-100 text-slate-500">
+        </div>
 
         @if(session('success'))
-            <p class="text-sm text-green-600">
-                {{ session('success') }}
-            </p>
+        <div class="alert-success">
+            {{ session('success') }}
+        </div>
         @endif
+
+        <div class="flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
+            <button type="submit" class="btn-primary">
+                Guardar cambios
+            </button>
+        </div>
     </form>
+
 </section>

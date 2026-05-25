@@ -1,76 +1,155 @@
 @extends('layouts.app')
 
+@section('title', 'Crear producto | Tech & Home')
+
 @section('content')
 
 @if(auth()->user()->role !== 'gerente')
-<div class="container mx-auto p-6">
-    <p class="text-red-600">No tienes permiso para crear productos.</p>
+
+<div class="app-page">
+    <div class="alert-danger">
+        No tienes permiso para crear productos.
+    </div>
 </div>
+
 @else
 
-<div class="container mx-auto p-6">
+<div class="page-container-md app-page">
 
-    <h1 class="text-2xl font-bold mb-6">Crear Producto</h1>
+    <div class="page-header">
+        <div>
+            <p class="page-kicker">
+                Gerencia
+            </p>
 
-    {{-- Mostrar errores de validación --}}
-    @if ($errors->any())
-    <div class="bg-red-200 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-        <ul>
-            @foreach ($errors->all() as $error)
+            <h1 class="page-title">
+                Crear producto
+            </h1>
+
+            <p class="page-description">
+                Registra un nuevo producto, asigna categorías y carga sus fotografías.
+            </p>
+        </div>
+
+        <a href="{{ route('productos.index') }}" class="btn-secondary w-full sm:w-auto">
+            Volver
+        </a>
+    </div>
+
+    @if($errors->any())
+    <div class="alert-danger">
+        <p class="font-semibold">
+            Revisa los siguientes campos:
+        </p>
+
+        <ul class="mt-2 list-inside list-disc space-y-1">
+            @foreach($errors->all() as $error)
             <li>{{ $error }}</li>
             @endforeach
         </ul>
     </div>
     @endif
 
-    <form action="{{ route('productos.store') }}" method="POST" enctype="multipart/form-data">
+    <section class="card card-body">
+        <form action="{{ route('productos.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
+            @csrf
 
-        @csrf
+            <div>
+                <label for="nombre" class="form-label">
+                    Nombre
+                </label>
 
-        <div class="mb-4">
-            <label class="block">Nombre</label>
-            <input type="text" name="nombre" class="border p-2 w-full" value="{{ old('nombre') }}">
-        </div>
+                <input id="nombre" type="text" name="nombre" value="{{ old('nombre') }}" placeholder="Nombre del producto" class="form-control">
 
-        <div class="mb-4">
-            <label class="block">Descripción</label>
-            <textarea name="descripcion" class="border p-2 w-full">{{ old('descripcion') }}</textarea>
-        </div>
+                @error('nombre')
+                <p class="form-error">{{ $message }}</p>
+                @enderror
+            </div>
 
-        <div class="mb-4">
-            <label class="block">Precio</label>
-            <input type="number" step="0.01" name="precio" class="border p-2 w-full" value="{{ old('precio') }}">
-        </div>
+            <div>
+                <label for="descripcion" class="form-label">
+                    Descripción
+                </label>
 
-        <div class="mb-4">
-            <label class="block">Existencia</label>
-            <input type="number" name="existencia" class="border p-2 w-full" value="{{ old('existencia') }}">
-        </div>
+                <textarea id="descripcion" name="descripcion" rows="4" placeholder="Descripción breve del producto" class="form-textarea">{{ old('descripcion') }}</textarea>
 
-        <div class="mb-4">
-            <label class="block">Categorías</label>
+                @error('descripcion')
+                <p class="form-error">{{ $message }}</p>
+                @enderror
+            </div>
 
-            <select name="categorias[]" multiple class="border p-2 w-full">
-                @foreach($categorias as $categoria)
-                <option value="{{ $categoria->id }}"
-                    {{ collect(old('categorias'))->contains($categoria->id) ? 'selected' : '' }}>
-                    {{ $categoria->nombre }}
-                </option>
-                @endforeach
-            </select>
-        </div>
+            <div class="form-grid">
+                <div>
+                    <label for="precio" class="form-label">
+                        Precio
+                    </label>
 
-        <div class="mb-4">
-            <label class="block">Fotos del producto</label>
-            <input type="file" name="fotos[]" multiple class="border p-2 w-full">
-        </div>
+                    <input id="precio" type="number" step="0.01" name="precio" value="{{ old('precio') }}" placeholder="0.00" class="form-control">
 
-        <button class="bg-green-500 text-white px-4 py-2 rounded">
-            Guardar
-        </button>
+                    @error('precio')
+                    <p class="form-error">{{ $message }}</p>
+                    @enderror
+                </div>
 
-    </form>
+                <div>
+                    <label for="existencia" class="form-label">
+                        Existencia
+                    </label>
 
+                    <input id="existencia" type="number" name="existencia" value="{{ old('existencia') }}" placeholder="Cantidad disponible" class="form-control">
+
+                    @error('existencia')
+                    <p class="form-error">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
+            <div>
+                <label for="categorias" class="form-label">
+                    Categorías
+                </label>
+
+                <select id="categorias" name="categorias[]" multiple class="form-select min-h-32">
+                    @foreach($categorias as $categoria)
+                    <option value="{{ $categoria->id }}" {{ collect(old('categorias'))->contains($categoria->id) ? 'selected' : '' }}>
+                        {{ $categoria->nombre }}
+                    </option>
+                    @endforeach
+                </select>
+
+                <p class="mt-2 text-xs text-slate-500">
+                    Mantén presionada la tecla Ctrl o Cmd para seleccionar varias categorías.
+                </p>
+
+                @error('categorias')
+                <p class="form-error">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div>
+                <label for="fotos" class="form-label">
+                    Fotos del producto
+                </label>
+
+                <input id="fotos" type="file" name="fotos[]" multiple accept="image/jpeg,image/png,image/jpg,image/webp" class="form-file">
+
+                @error('fotos')
+                <p class="form-error">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
+                <a href="{{ route('productos.index') }}" class="btn-secondary">
+                    Cancelar
+                </a>
+
+                <button type="submit" class="btn-primary">
+                    Guardar producto
+                </button>
+            </div>
+
+        </form>
+    </section>
 
 </div>
 

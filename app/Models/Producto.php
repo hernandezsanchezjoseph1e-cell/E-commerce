@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+
 class Producto extends Model
 {
     protected $table = 'productos';
@@ -14,7 +15,7 @@ class Producto extends Model
         'precio',
         'existencia',
         'usuario_id',
-        'fotos'
+        'fotos',
     ];
 
     protected $casts = [
@@ -54,26 +55,42 @@ class Producto extends Model
         return $this->ventas()->sum('cantidad');
     }
 
+    public function scopeDisponibles($query)
+    {
+        return $query->where('existencia', '>', 0);
+    }
+
     public function scopeSearch($query, $search)
     {
-        if ($search) {
-            $query->where('nombre', 'like', "%{$search}%");
-        }
+        return $query->when($search, function ($q) use ($search) {
+            $q->where('nombre', 'like', "%{$search}%");
+        });
     }
 
     public function scopeCategoria($query, $categoriaId)
     {
-        if ($categoriaId) {
-            $query->whereHas('categorias', function ($q) use ($categoriaId) {
-                $q->where('categorias.id', $categoriaId);
+        return $query->when($categoriaId, function ($q) use ($categoriaId) {
+            $q->whereHas('categorias', function ($categoriaQuery) use ($categoriaId) {
+                $categoriaQuery->where('categorias.id', $categoriaId);
             });
-        }
+        });
     }
 
     public function scopeStock($query, $stock)
     {
-        if ($stock === 'bajo') {
-            $query->where('existencia', '<', 5);
-        }
+        return $query->when($stock === 'bajo', function ($q) {
+            $q->where('existencia', '<', 5);
+        });
+    }
+
+    //scope para ver productos publicos en la bienvenida
+    public static function destacadosPublicos(int $limite = 6)
+    {
+        return self::query()
+            ->with(['usuario', 'categorias'])
+            ->disponibles()
+            ->latest()
+            ->take($limite)
+            ->get();
     }
 }

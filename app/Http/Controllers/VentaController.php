@@ -16,23 +16,11 @@ class VentaController extends Controller
 
         $user = auth()->user();
 
-        $ventas = Venta::with(['producto', 'cliente', 'vendedor'])
-            ->when($user->isCliente(), function ($query) use ($user) {
-                $query->where('cliente_id', $user->id);
-            })
-            ->when($user->isGerente(), function ($query) use ($user) {
-                $query->where('vendedor_id', $user->id)
-                    ->where('validada', true);
-            })
-            ->when($user->isAdmin(), function ($query) {
-                $query->where('validada', true);
-            })
-            ->latest()
-            ->get();
+        $ventasAgrupadas = Venta::registradasAgrupadasParaUsuario($user);
 
         return view(
             $user->isCliente() ? 'cliente.ventas' : 'ventas.index',
-            compact('ventas')
+            compact('ventasAgrupadas')
         );
     }
 
@@ -44,14 +32,7 @@ class VentaController extends Controller
          | Esta vista ya no crea una venta manual.
          | Ahora muestra compras pendientes agrupadas por referencia de pago.
          */
-        $ventas = Venta::with(['producto', 'cliente', 'vendedor'])
-            ->where('vendedor_id', auth()->id())
-            ->where('validada', false)
-            ->latest()
-            ->get()
-            ->groupBy(function ($venta) {
-                return $venta->referencia_pago ?? 'SIN_REFERENCIA_' . $venta->id;
-            });
+        $ventas = Venta::pendientesAgrupadasPorReferenciaParaVendedor(auth()->id());
 
         return view('ventas.create', compact('ventas'));
     }
@@ -77,17 +58,7 @@ class VentaController extends Controller
             return back()->with('success', 'La venta ya estaba registrada.');
         }
 
-        $query = Venta::with(['producto', 'cliente', 'vendedor'])
-            ->where('vendedor_id', auth()->id())
-            ->where('validada', false);
-
-        if ($venta->referencia_pago) {
-            $query->where('referencia_pago', $venta->referencia_pago);
-        } else {
-            $query->where('id', $venta->id);
-        }
-
-        $ventas = $query->get();
+        $ventas = Venta::pendientesParaRegistrar($venta, auth()->id());
 
         if ($ventas->isEmpty()) {
             return back()->withErrors([
@@ -95,13 +66,7 @@ class VentaController extends Controller
             ]);
         }
 
-        Venta::whereIn('id', $ventas->pluck('id'))->update([
-            'validada' => true,
-        ]);
-
-        $ventas->each(function ($ventaConfirmada) {
-            $ventaConfirmada->validada = true;
-        });
+        Venta::registrarVentasPendientes($ventas);
 
         $ventaBase = $ventas->first();
 

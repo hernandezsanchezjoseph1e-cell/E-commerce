@@ -1,42 +1,36 @@
-<section class="space-y-6">
+<section class="space-y-5">
 
-    <header>
-        <h2 class="text-lg font-medium text-red-600">
-            Eliminar cuenta
-        </h2>
-
-        <p class="text-sm text-gray-600">
-            Esta acción eliminará permanentemente tu cuenta.
+    <div class="alert-danger">
+        <p class="font-semibold">
+            Zona de riesgo
         </p>
-    </header>
 
-    <form method="POST" action="{{ route('profile.destroy') }}">
+        <p class="mt-1">
+            Al eliminar tu cuenta, la acción será permanente. Confirma tu contraseña para continuar.
+        </p>
+    </div>
+
+    <form method="POST" action="{{ route('profile.destroy') }}" class="space-y-5" novalidate>
         @csrf
         @method('DELETE')
 
         <div>
-            <label class="block text-sm font-medium text-gray-700">
+            <label for="delete_password" class="form-label">
                 Confirma tu contraseña
             </label>
 
-            <input
-                type="password"
-                name="password"
-                class="mt-1 block w-full border-gray-300 rounded-md"
-            >
+            <input id="delete_password" type="password" name="delete_password" autocomplete="current-password" class="form-control">
 
-            @error('password')
-                <p class="text-sm text-red-600">{{ $message }}</p>
+            @error('delete_password')
+            <p class="form-error">{{ $message }}</p>
             @enderror
         </div>
 
-        <button
-            type="submit"
-            class="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-        >
-            Eliminar cuenta
-        </button>
-
+        <div class="flex flex-col-reverse gap-3 border-t border-red-200 pt-5 sm:flex-row sm:justify-end">
+            <button type="submit" class="btn-danger">
+                Eliminar cuenta
+            </button>
+        </div>
     </form>
 
 </section>

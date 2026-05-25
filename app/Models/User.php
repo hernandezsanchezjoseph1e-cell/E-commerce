@@ -119,4 +119,19 @@ class User extends Authenticatable
             });
         }
     }
+
+    public function nombreCompleto(): string
+    {
+        return trim("{$this->nombre} {$this->apellidos}");
+    }
+
+    public function dashboardRouteName(): string
+    {
+        return match ($this->role) {
+            'administrador' => 'dashboard.administrador',
+            'gerente' => 'dashboard.gerente',
+            'cliente' => 'dashboard.cliente',
+            default => 'inicio',
+        };
+    }
 }
