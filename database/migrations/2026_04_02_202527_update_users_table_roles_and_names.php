@@ -9,14 +9,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // 1 permitir temporalmente todos los valores
-        DB::statement("
-            ALTER TABLE users 
-            MODIFY role ENUM('cliente','empleado','gerente','administrador') 
-            NOT NULL DEFAULT 'cliente'
-        ");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("
+                ALTER TABLE users 
+                MODIFY role ENUM('cliente','empleado','gerente','administrador') 
+                NOT NULL DEFAULT 'cliente'
+            ");
+        }
 
-        // 2 actualizar roles existentes
         DB::table('users')
             ->where('role', 'empleado')
             ->update(['role' => 'gerente']);
@@ -25,16 +25,15 @@ return new class extends Migration
             ->where('role', 'gerente')
             ->update(['role' => 'administrador']);
 
-        // 3 eliminar 'empleado' del ENUM final
-        DB::statement("
-            ALTER TABLE users 
-            MODIFY role ENUM('cliente','gerente','administrador') 
-            NOT NULL DEFAULT 'cliente'
-        ");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("
+                ALTER TABLE users 
+                MODIFY role ENUM('cliente','gerente','administrador') 
+                NOT NULL DEFAULT 'cliente'
+            ");
+        }
 
-        // 4 columnas nombre/apellidos si no existen
         Schema::table('users', function (Blueprint $table) {
-
             if (!Schema::hasColumn('users', 'nombre')) {
                 $table->string('nombre')->nullable();
             }
@@ -42,21 +41,20 @@ return new class extends Migration
             if (!Schema::hasColumn('users', 'apellidos')) {
                 $table->string('apellidos')->nullable();
             }
-
         });
     }
 
     public function down(): void
     {
-        // restaurar ENUM anterior
-        DB::statement("
-            ALTER TABLE users 
-            MODIFY role ENUM('cliente','empleado','gerente') 
-            NOT NULL DEFAULT 'cliente'
-        ");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("
+                ALTER TABLE users 
+                MODIFY role ENUM('cliente','empleado','gerente') 
+                NOT NULL DEFAULT 'cliente'
+            ");
+        }
 
         Schema::table('users', function (Blueprint $table) {
-
             if (Schema::hasColumn('users', 'nombre')) {
                 $table->dropColumn('nombre');
             }
@@ -64,7 +62,6 @@ return new class extends Migration
             if (Schema::hasColumn('users', 'apellidos')) {
                 $table->dropColumn('apellidos');
             }
-
         });
     }
 };
