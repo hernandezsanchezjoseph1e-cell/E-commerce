@@ -1,0 +1,89 @@
+name: Laravel CI
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: laravel-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Laravel 12 - Tests and Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      APP_NAME: "Tech & Home"
+      APP_ENV: testing
+      APP_KEY: base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      APP_DEBUG: true
+      APP_URL: http://localhost
+
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ${{ github.workspace }}/database/database.sqlite
+
+      CACHE_STORE: array
+      SESSION_DRIVER: array
+      QUEUE_CONNECTION: sync
+
+      MAIL_MAILER: array
+      MAIL_HOST: localhost
+      MAIL_PORT: 2525
+      MAIL_USERNAME: null
+      MAIL_PASSWORD: null
+      MAIL_ENCRYPTION: null
+      MAIL_FROM_ADDRESS: testing@example.com
+      MAIL_FROM_NAME: "Tech & Home"
+
+      BCRYPT_ROUNDS: 4
+      VITE_APP_NAME: "Tech & Home"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: mbstring, dom, fileinfo, mysql, pdo_mysql, sqlite, pdo_sqlite, bcmath, gd, intl, zip
+          coverage: none
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Prepare Laravel environment
+        run: |
+          cp .env.example .env
+          mkdir -p database
+          touch database/database.sqlite
+          mkdir -p storage/framework/cache/data
+          mkdir -p storage/framework/sessions
+          mkdir -p storage/framework/views
+          mkdir -p bootstrap/cache
+          php artisan config:clear
+
+      - name: Run migrations and seeders
+        run: php artisan migrate:fresh --seed --force
+
+      - name: Build frontend assets
+        run: npm run build
+
+      - name: Run automated tests
+        run: php artisan test --env=testing
