@@ -1,147 +1,222 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
-@section('title', 'Comprobante de pago')
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Comprobante de pago | Tech & Home</title>
 
-@section('content')
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
 
-<div class="container mx-auto p-6">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    <div class="max-w-2xl mx-auto bg-white shadow rounded p-6">
+    <style>
+        @media print {
+            .no-print {
+                display: none !important;
+            }
 
-        <h1 class="text-2xl font-bold text-gray-800 mb-2">
-            Comprobante de pago
-        </h1>
+            body {
+                background: white !important;
+            }
 
-        <p class="text-gray-600 mb-6">
-            Presenta esta referencia para realizar tu pago.
-        </p>
+            .print-card {
+                box-shadow: none !important;
+                border: none !important;
+            }
+        }
+    </style>
+</head>
 
-        <div class="border rounded p-4 mb-6 bg-gray-50">
+<body class="bg-slate-100 font-sans text-slate-900">
 
-            <p class="text-sm text-gray-500">Referencia</p>
+    @php
+    $ventaBase = $ventas->first();
+    @endphp
 
-            <p class="text-2xl font-bold tracking-wider">
-                {{ $referencia }}
-            </p>
+    <main class="min-h-screen px-4 py-8 sm:px-6 lg:px-8">
 
-        </div>
+        <div class="mx-auto max-w-3xl">
 
-        <div class="border rounded p-4 mb-6 text-center">
+            <div class="no-print mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <a href="{{ route('cliente.ventas.index') }}" class="btn-secondary w-full sm:w-auto">
+                    Volver a mis compras
+                </a>
 
-            <p class="text-sm text-gray-500 mb-2">
-                Código de pago
-            </p>
-
-            @php
-            $codigoPago = (string) $ventas->first()->codigo_pago;
-            @endphp
-
-            <div class="text-3xl font-bold tracking-widest mb-2">
-                {{ $codigoPago }}
+                <button onclick="window.print()" class="btn-primary w-full sm:w-auto">
+                    Imprimir / guardar PDF
+                </button>
             </div>
 
-            <div class="h-20 flex items-end justify-center gap-1 mb-2">
-                @foreach(str_split($codigoPago) as $numero)
-                @php
-                $ancho = 2 + ((int) $numero % 4);
-                $alto = 35 + ((int) $numero * 4);
-                $estiloBarra = "width: {$ancho}px; height: {$alto}px;";
-                @endphp
+            <section class="print-card overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
 
-                <div class="bg-black" style="{{ $estiloBarra }}"></div>
-                @endforeach
-            </div>
+                <div class="border-b border-slate-200 px-6 py-5">
+                    <p class="text-sm font-semibold uppercase tracking-wide text-emerald-700">
+                        Tech & Home
+                    </p>
 
-            <p class="text-xs text-gray-500">
-                Código generado por el sistema para referencia interna.
-            </p>
+                    <h1 class="mt-1 text-2xl font-bold tracking-tight text-slate-900">
+                        Comprobante de pago
+                    </h1>
+
+                    <p class="mt-2 text-sm text-slate-500">
+                        Presenta esta información para realizar o identificar tu pago.
+                    </p>
+                </div>
+
+                <div class="space-y-6 px-6 py-6">
+
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+                            <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                                Referencia de pago
+                            </p>
+
+                            <p class="mt-2 font-mono text-xl font-bold tracking-wide text-slate-900">
+                                {{ $referencia }}
+                            </p>
+                        </div>
+
+                        <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+                            <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                                Código de pago
+                            </p>
+
+                            <p class="mt-2 font-mono text-xl font-bold tracking-wide text-slate-900">
+                                {{ $ventaBase->codigo_pago ?? 'Sin código' }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <div class="rounded-2xl border border-slate-200 px-4 py-4">
+                            <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                                Cliente
+                            </p>
+
+                            <p class="mt-2 text-sm font-semibold text-slate-900">
+                                {{ $ventaBase->cliente->nombre }} {{ $ventaBase->cliente->apellidos }}
+                            </p>
+
+                            <p class="mt-1 text-sm text-slate-500">
+                                {{ $ventaBase->cliente->email }}
+                            </p>
+                        </div>
+
+                        <div class="rounded-2xl border border-slate-200 px-4 py-4">
+                            <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                                Vendedor
+                            </p>
+
+                            <p class="mt-2 text-sm font-semibold text-slate-900">
+                                {{ $ventaBase->vendedor->nombre }} {{ $ventaBase->vendedor->apellidos }}
+                            </p>
+
+                            <p class="mt-1 text-sm text-slate-500">
+                                {{ $ventaBase->vendedor->email }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">
+                            Resumen de compra
+                        </h2>
+
+                        <div class="mt-4 overflow-hidden rounded-2xl border border-slate-200">
+                            <table class="w-full border-collapse">
+                                <thead class="bg-slate-50">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                            Producto
+                                        </th>
+
+                                        <th class="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                            Cantidad
+                                        </th>
+
+                                        <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                            Precio
+                                        </th>
+
+                                        <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-slate-500">
+                                            Subtotal
+                                        </th>
+                                    </tr>
+                                </thead>
+
+                                <tbody class="divide-y divide-slate-100 bg-white">
+                                    @foreach($ventas as $venta)
+                                    <tr>
+                                        <td class="px-4 py-3 text-sm font-medium text-slate-900">
+                                            {{ $venta->producto->nombre }}
+                                        </td>
+
+                                        <td class="px-4 py-3 text-center text-sm text-slate-600">
+                                            {{ $venta->cantidad }}
+                                        </td>
+
+                                        <td class="px-4 py-3 text-right text-sm text-slate-600">
+                                            ${{ number_format($venta->producto->precio, 2) }}
+                                        </td>
+
+                                        <td class="px-4 py-3 text-right text-sm font-semibold text-slate-900">
+                                            ${{ number_format($venta->total, 2) }}
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+                        <div class="flex items-center justify-between gap-4">
+                            <span class="text-sm font-semibold text-slate-600">
+                                Total a pagar
+                            </span>
+
+                            <span class="text-2xl font-bold text-emerald-700">
+                                ${{ number_format($total, 2) }}
+                            </span>
+                        </div>
+
+                        <div class="mt-4 grid grid-cols-1 gap-3 border-t border-slate-200 pt-4 sm:grid-cols-2">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                                    Fecha límite
+                                </p>
+
+                                <p class="mt-1 text-sm font-semibold text-slate-800">
+                                    {{ $ventaBase->fecha_limite_pago->format('d/m/Y H:i') }}
+                                </p>
+                            </div>
+
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                                    Método de pago
+                                </p>
+
+                                <p class="mt-1 text-sm font-semibold uppercase text-slate-800">
+                                    {{ $ventaBase->metodo_pago ?? 'No especificado' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-center text-xs text-slate-400">
+                        Este comprobante fue generado automáticamente por Tech & Home.
+                    </p>
+
+                </div>
+
+            </section>
 
         </div>
 
-        <div class="mb-6">
+    </main>
 
-            <h2 class="font-bold text-lg mb-3">
-                Resumen de compra
-            </h2>
+</body>
 
-            <div class="border rounded p-4 mb-3">
-
-                <p class="font-semibold mb-4">
-                    Vendedor:
-                    {{ $ventas->first()->vendedor->nombre }}
-                    {{ $ventas->first()->vendedor->apellidos }}
-                </p>
-
-                <table class="w-full border-collapse">
-                    <thead class="bg-gray-100">
-                        <tr>
-                            <th class="p-2 text-left">Producto</th>
-                            <th class="p-2 text-center">Cantidad</th>
-                            <th class="p-2 text-right">Precio unitario</th>
-                            <th class="p-2 text-right">Subtotal</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        @foreach($ventas as $venta)
-                        <tr class="border-t">
-                            <td class="p-2">
-                                {{ $venta->producto->nombre }}
-                            </td>
-
-                            <td class="p-2 text-center">
-                                {{ $venta->cantidad }}
-                            </td>
-
-                            <td class="p-2 text-right">
-                                ${{ number_format($venta->producto->precio, 2) }}
-                            </td>
-
-                            <td class="p-2 text-right">
-                                ${{ number_format($venta->total, 2) }}
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-
-            </div>
-
-        </div>
-
-        <div class="border-t pt-4 mb-6">
-
-            <p class="flex justify-between text-lg">
-                <span>Total a pagar:</span>
-                <strong>${{ number_format($total, 2) }}</strong>
-            </p>
-
-            <p class="flex justify-between text-sm text-gray-600 mt-2">
-                <span>Fecha límite:</span>
-                <span>{{ $ventas->first()->fecha_limite_pago->format('d/m/Y H:i') }}</span>
-            </p>
-
-            <p class="flex justify-between text-sm text-gray-600 mt-1">
-                <span>Método de pago:</span>
-                <span>{{ strtoupper($ventas->first()->metodo_pago) }}</span>
-            </p>
-
-        </div>
-
-        <div class="flex gap-3">
-
-            <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-                Descargar / imprimir comprobante
-            </button>
-
-            <a href="{{ route('cliente.ventas.index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded">
-                Ver mis compras
-            </a>
-
-        </div>
-
-    </div>
-
-</div>
-
-@endsection
+</html>

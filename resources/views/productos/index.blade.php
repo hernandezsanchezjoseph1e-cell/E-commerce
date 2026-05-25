@@ -1,130 +1,199 @@
 @extends('layouts.app')
 
+@section('title', 'Gestión de productos | Tech & Home')
+
 @section('content')
 
-<div class="container mx-auto p-6">
+<div class="app-page">
 
-    <div class="flex justify-between mb-6">
-        <h1 class="text-2xl font-bold">Productos</h1>
+    <div class="page-header">
+        <div>
+            <p class="page-kicker">
+                {{ auth()->user()->role === 'administrador' ? 'Administración' : 'Gerencia' }}
+            </p>
+
+            <h1 class="page-title">
+                Gestión de productos
+            </h1>
+
+            <p class="page-description">
+                Consulta los productos registrados, su existencia, vendedor y categorías asignadas.
+            </p>
+        </div>
 
         @if(auth()->user()->role === 'gerente')
-        <a href="{{ route('productos.create') }}"
-            class="bg-blue-500 text-white px-4 py-2 rounded">
-            Nuevo Producto
+        <a href="{{ route('productos.create') }}" class="btn-primary w-full sm:w-auto">
+            Nuevo producto
         </a>
         @endif
-
     </div>
 
-    <form method="GET" class="mb-4 flex gap-2">
+    <section class="card card-body">
+        <form method="GET" action="{{ route('productos.index') }}" class="filter-grid">
 
-        <input type="text" name="search"
-            value="{{ request('search') }}"
-            placeholder="Buscar producto..."
-            class="border px-2 py-1 rounded">
+            <div class="md:col-span-2 xl:col-span-5">
+                <label for="search" class="form-label">
+                    Buscar producto
+                </label>
 
-        <select name="categoria" class="border px-2 py-1 rounded">
-            <option value="">Todas las categorías</option>
-            @foreach(\App\Models\Categoria::all() as $cat)
-            <option value="{{ $cat->id }}"
-                {{ request('categoria') == $cat->id ? 'selected' : '' }}>
-                {{ $cat->nombre }}
-            </option>
-            @endforeach
-        </select>
+                <input id="search" type="text" name="search" value="{{ request('search') }}" placeholder="Nombre del producto..." class="form-control">
+            </div>
 
-        <select name="stock"
-            class="border px-2 py-1 rounded">
+            <div class="md:col-span-1 xl:col-span-4">
+                <label for="categoria" class="form-label">
+                    Categoría
+                </label>
 
-            <option value="">Stock</option>
+                <select id="categoria" name="categoria" class="form-select">
+                    <option value="">Todas las categorías</option>
 
-            <option value="bajo"
-                {{ request('stock') == 'bajo' ? 'selected' : '' }}>
-                Stock bajo
-            </option>
-
-        </select>
-
-        <button class="bg-blue-600 text-white px-3 py-1 rounded">
-            Filtrar
-        </button>
-
-    </form>
-
-    <table class="w-full border border-gray-300">
-        <thead class="bg-gray-200">
-            <tr>
-                <th class="p-2">ID</th>
-                <th class="p-2">Nombre</th>
-                <th class="p-2">Precio</th>
-                <th class="p-2">Existencia</th>
-                <th class="p-2">Registrado por</th>
-                <th class="p-2">Categorías</th>
-                <th class="p-2">Acciones</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            @foreach($productos as $producto)
-
-            <tr class="border-t">
-
-                <td class="p-2">{{ $producto->id }}</td>
-
-                <td class="p-2">{{ $producto->nombre }}</td>
-
-                <td class="p-2">${{ $producto->precio }}</td>
-
-                <td class="p-2">{{ $producto->existencia }}</td>
-
-                <td class="p-2">
-                    {{ $producto->usuario->nombre ?? 'N/A' }}
-                </td>
-
-                <td class="p-2">
-                    @foreach($producto->categorias as $categoria)
-                    <span class="bg-gray-300 px-2 py-1 rounded text-sm">
-                        {{ $categoria->nombre }}
-                    </span>
+                    @foreach($categorias as $cat)
+                    <option value="{{ $cat->id }}" {{ request('categoria') == $cat->id ? 'selected' : '' }}>
+                        {{ $cat->nombre }}
+                    </option>
                     @endforeach
-                </td>
+                </select>
+            </div>
 
-                <td class="p-2 flex gap-3">
+            <div class="md:col-span-1 xl:col-span-2">
+                <label for="stock" class="form-label">
+                    Stock
+                </label>
 
-                    {{-- EDITAR SOLO GERENTE --}}
-                    @if(auth()->user()->role === 'gerente')
-                    <a href="{{ route('productos.edit',$producto) }}"
-                        class="text-blue-600">
-                        Editar
-                    </a>
-                    @endif
+                <select id="stock" name="stock" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="bajo" {{ request('stock') == 'bajo' ? 'selected' : '' }}>
+                        Stock bajo
+                    </option>
+                </select>
+            </div>
 
-                    {{-- ELIMINAR SOLO ADMIN --}}
-                    @if(auth()->user()->role === 'administrador')
-                    <form action="{{ route('productos.destroy',$producto) }}"
-                        method="POST">
+            <div class="flex items-end md:col-span-2 xl:col-span-1">
+                <button type="submit" class="btn-primary w-full">
+                    Filtrar
+                </button>
+            </div>
 
-                        @csrf
-                        @method('DELETE')
+        </form>
+    </section>
 
-                        <button class="text-red-600">
-                            Eliminar
-                        </button>
+    <section class="table-wrapper">
 
-                    </form>
-                    @endif
+        <div class="card-header">
+            <h2 class="card-title">
+                Productos registrados
+            </h2>
 
-                </td>
+            <p class="card-description">
+                Listado general de productos disponibles dentro del sistema.
+            </p>
+        </div>
 
-            </tr>
+        <div class="table-scroll">
+            <table class="data-table-lg">
+                <thead class="data-thead">
+                    <tr>
+                        <th class="data-th">ID</th>
+                        <th class="data-th">Producto</th>
+                        <th class="data-th">Precio</th>
+                        <th class="data-th">Existencia</th>
+                        <th class="data-th">Registrado por</th>
+                        <th class="data-th">Categorías</th>
+                        <th class="data-th-right">Acciones</th>
+                    </tr>
+                </thead>
 
-            @endforeach
-        </tbody>
+                <tbody class="divide-y divide-slate-100 bg-white">
+                    @forelse($productos as $producto)
+                    <tr class="data-row">
+                        <td class="data-td">
+                            #{{ $producto->id }}
+                        </td>
 
-    </table>
-    <div class="mt-4">
-        {{ $productos->links() }}
-    </div>
+                        <td class="data-td-strong">
+                            {{ $producto->nombre }}
+                        </td>
+
+                        <td class="data-td-strong">
+                            ${{ number_format($producto->precio, 2) }}
+                        </td>
+
+                        <td class="data-td">
+                            @if($producto->existencia <= 0)
+                                <span class="badge-danger">
+                                Sin stock
+                                </span>
+                                @elseif($producto->existencia <= 5)
+                                    <span class="badge-warning">
+                                    {{ $producto->existencia }} disponibles
+                                    </span>
+                                    @else
+                                    <span class="badge-success">
+                                        {{ $producto->existencia }} disponibles
+                                    </span>
+                                    @endif
+                        </td>
+
+                        <td class="data-td">
+                            {{ $producto->usuario->nombre ?? 'N/A' }}
+                        </td>
+
+                        <td class="data-td">
+                            <div class="flex flex-wrap gap-2">
+                                @forelse($producto->categorias as $categoria)
+                                <span class="badge-slate">
+                                    {{ $categoria->nombre }}
+                                </span>
+                                @empty
+                                <span class="text-sm text-slate-400">
+                                    Sin categoría
+                                </span>
+                                @endforelse
+                            </div>
+                        </td>
+
+                        <td class="data-td">
+                            <div class="flex items-center justify-end gap-3">
+
+                                @if(auth()->user()->role === 'gerente')
+                                <a href="{{ route('productos.edit', $producto) }}" class="action-link">
+                                    Editar
+                                </a>
+                                @endif
+
+                                @if(auth()->user()->role === 'administrador')
+                                <button type="button"
+                                    data-confirm-button
+                                    data-confirm-title="Eliminar producto"
+                                    data-confirm-message="¿Seguro que deseas eliminar el producto {{ $producto->nombre }}?"
+                                    data-confirm-action="{{ route('productos.destroy', $producto) }}"
+                                    data-confirm-method="DELETE"
+                                    data-confirm-text="Eliminar"
+                                    data-confirm-variant="danger"
+                                    class="danger-link">
+                                    Eliminar
+                                </button>
+                                @endif
+
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7" class="table-empty">
+                            No se encontraron productos registrados.
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card-footer">
+            {{ $productos->links() }}
+        </div>
+
+    </section>
 
 </div>
 

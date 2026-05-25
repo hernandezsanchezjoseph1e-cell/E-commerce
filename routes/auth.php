@@ -6,7 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\EmailVerificationController;
-use App\Http\Controllers\Auth\PasswordController;
+// use App\Http\Controllers\Auth\PasswordController;
 
 
 Route::middleware('guest')->group(function () {
@@ -59,8 +59,8 @@ Route::middleware('auth')->group(function () {
         ->middleware(['signed', 'throttle:6,1'])
         ->name('verification.verify');
 
-    Route::put('/password', [PasswordController::class, 'update'])
-        ->name('password.update');
+    //Route::put('/password', [PasswordController::class, 'update'])
+    //  ->name('password.update');
 
     // Logout
     Route::post('/logout', [LoginController::class, 'logout'])

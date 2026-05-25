@@ -1,3 +1,342 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+@layer base {
+    [x-cloak] {
+        display: none !important;
+    }
+}
+
+@layer components {
+    /*
+    |--------------------------------------------------------------------------
+    | Layout general
+    |--------------------------------------------------------------------------
+    */
+
+    .app-page {
+        @apply space-y-6;
+    }
+
+    .page-container-sm {
+        @apply mx-auto max-w-3xl;
+    }
+
+    .page-container-md {
+        @apply mx-auto max-w-5xl;
+    }
+
+    .page-header {
+        @apply flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between;
+    }
+
+    .page-header-simple {
+        @apply flex flex-col gap-2;
+    }
+
+    .page-kicker {
+        @apply text-sm font-medium uppercase tracking-wide text-emerald-700;
+    }
+
+    .page-title {
+        @apply mt-1 text-2xl font-bold tracking-tight text-slate-900;
+    }
+
+    .page-description {
+        @apply mt-1 text-sm text-slate-500;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cards
+    |--------------------------------------------------------------------------
+    */
+
+    .card {
+        @apply rounded-2xl border border-slate-200 bg-white shadow-sm;
+    }
+
+    .card-body {
+        @apply p-5 sm:p-6;
+    }
+
+    .card-header {
+        @apply border-b border-slate-200 px-5 py-4 sm:px-6;
+    }
+
+    .card-footer {
+        @apply border-t border-slate-200 bg-slate-50 px-5 py-4 sm:px-6;
+    }
+
+    .card-title {
+        @apply text-lg font-semibold text-slate-900;
+    }
+
+    .card-description {
+        @apply mt-1 text-sm text-slate-500;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Botones
+    |--------------------------------------------------------------------------
+    */
+
+    .btn-primary {
+        @apply inline-flex items-center justify-center rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/20;
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-300/30;
+    }
+
+    .btn-success {
+        @apply inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-500/20;
+    }
+
+    .btn-danger {
+        @apply inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-500/20;
+    }
+
+    .btn-muted {
+        @apply inline-flex items-center justify-center rounded-lg bg-slate-100 px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-200 focus:outline-none focus:ring-4 focus:ring-slate-300/30;
+    }
+
+    .action-link {
+        @apply text-sm font-semibold text-emerald-700 transition hover:text-emerald-800 hover:underline;
+    }
+
+    .danger-link {
+        @apply text-sm font-semibold text-red-600 transition hover:text-red-700 hover:underline;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Formularios
+    |--------------------------------------------------------------------------
+    */
+
+    .form-grid {
+        @apply grid grid-cols-1 gap-5 sm:grid-cols-2;
+    }
+
+    .filter-grid {
+        @apply grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-12;
+    }
+
+    .form-label {
+        @apply block text-sm font-semibold text-slate-700;
+    }
+
+    .form-control {
+        @apply mt-2 w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-900 shadow-sm focus:border-emerald-500 focus:ring-emerald-500;
+    }
+
+    .form-textarea {
+        @apply mt-2 w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-900 shadow-sm focus:border-emerald-500 focus:ring-emerald-500;
+    }
+
+    .form-select {
+        @apply mt-2 w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-900 shadow-sm focus:border-emerald-500 focus:ring-emerald-500;
+    }
+
+    .form-file {
+        @apply mt-2 w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-700 shadow-sm file:mr-4 file:rounded-lg file:border-0 file:bg-slate-900 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-slate-800 focus:border-emerald-500 focus:ring-emerald-500;
+    }
+
+    .form-error {
+        @apply mt-2 text-sm text-red-600;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Alerts
+    |--------------------------------------------------------------------------
+    */
+
+    .alert-success {
+        @apply rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700;
+    }
+
+    .alert-danger {
+        @apply rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700;
+    }
+
+    .alert-warning {
+        @apply rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700;
+    }
+
+    .alert-info {
+        @apply rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Tablas
+    |--------------------------------------------------------------------------
+    */
+
+    .table-wrapper {
+        @apply overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm;
+    }
+
+    .table-scroll {
+        @apply overflow-x-auto;
+    }
+
+    .data-table {
+        min-width: 900px;
+        @apply w-full divide-y divide-slate-200;
+    }
+
+    .data-table-lg {
+        min-width: 1050px;
+        @apply w-full divide-y divide-slate-200;
+    }
+
+    .data-thead {
+        @apply bg-slate-50;
+    }
+
+    .data-th {
+        @apply px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500;
+    }
+
+    .data-th-right {
+        @apply px-5 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500;
+    }
+
+    .data-td {
+        @apply px-5 py-4 text-sm text-slate-600;
+    }
+
+    .data-td-strong {
+        @apply px-5 py-4 text-sm font-semibold text-slate-900;
+    }
+
+    .data-row {
+        @apply transition hover:bg-slate-50;
+    }
+
+    .table-empty {
+        @apply px-5 py-10 text-center text-sm text-slate-500;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Badges
+    |--------------------------------------------------------------------------
+    */
+
+    .badge-slate {
+        @apply inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700;
+    }
+
+    .badge-info {
+        @apply inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800;
+    }
+
+    .badge-success {
+        @apply inline-flex items-center rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800;
+    }
+
+    .badge-warning {
+        @apply inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800;
+    }
+
+    .badge-danger {
+        @apply inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-800;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Imágenes
+    |--------------------------------------------------------------------------
+    */
+
+    .image-thumb {
+        @apply h-20 w-20 rounded-lg border border-slate-200 object-cover;
+    }
+
+    .image-preview-grid {
+        @apply flex flex-wrap gap-3;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Modales
+    |--------------------------------------------------------------------------
+    */
+
+    .modal-backdrop {
+    @apply fixed inset-0 z-50 items-center justify-center bg-slate-950/55 px-4 py-6 backdrop-blur-sm;
+}
+
+    .modal-card {
+        width: min(100% - 2rem, 420px);
+        @apply overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-slate-900/10;
+    }
+
+    .delete-user-modal-card {
+        width: min(100% - 2rem, 420px);
+    }
+
+     /*
+|--------------------------------------------------------------------------
+| Navbar
+|--------------------------------------------------------------------------
+*/
+
+.nav-link {
+    @apply inline-flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 md:w-auto;
+}
+
+.nav-link-active {
+    @apply bg-emerald-50 text-emerald-700;
+}
+
+.nav-link-button {
+    @apply inline-flex w-full items-center rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 md:w-auto;
+}
+
+.nav-icon-link {
+    @apply relative inline-flex w-full items-center justify-start gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-4 focus:ring-emerald-500/20 md:h-10 md:w-10 md:justify-center md:gap-0 md:px-0 md:py-0;
+}
+
+.nav-icon-link-active {
+    @apply bg-emerald-50 text-emerald-700;
+}
+
+.nav-icon-button {
+    @apply relative inline-flex w-full items-center justify-start gap-3 rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-4 focus:ring-emerald-500/20 md:h-10 md:w-10 md:justify-center md:gap-0 md:px-0 md:py-0;
+}
+
+.nav-icon {
+    @apply h-5 w-5 shrink-0;
+}
+
+.nav-icon-label {
+    @apply text-sm md:sr-only;
+}
+
+.nav-tooltip {
+    @apply pointer-events-none absolute left-1/2 top-full z-50 mt-2 hidden -translate-x-1/2 whitespace-nowrap rounded-lg bg-slate-900 px-2.5 py-1.5 text-xs font-medium text-white opacity-0 shadow-lg transition md:block;
+}
+
+.nav-icon-link:hover .nav-tooltip,
+.nav-icon-link:focus-visible .nav-tooltip,
+.nav-icon-button:hover .nav-tooltip,
+.nav-icon-button:focus-visible .nav-tooltip {
+    opacity: 1;
+}
+
+.nav-badge {
+    @apply ml-auto inline-flex min-w-5 items-center justify-center rounded-full bg-emerald-600 px-1.5 py-0.5 text-xs font-bold text-white md:absolute md:-right-1 md:-top-1 md:ml-0;
+}
+
+}
+
+
+   

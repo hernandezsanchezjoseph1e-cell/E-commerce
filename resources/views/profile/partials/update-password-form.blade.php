@@ -1,67 +1,52 @@
 <section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            Cambiar contraseña
-        </h2>
 
-        <p class="mt-1 text-sm text-gray-600">
-            Usa una contraseña segura.
-        </p>
-    </header>
-
-    <form method="POST" action="{{ route('password.update') }}" class="mt-6 space-y-6">
+    <form method="POST" action="{{ route('password.update') }}" class="space-y-5" novalidate>
         @csrf
         @method('PUT')
 
         <div>
-            <label class="block text-sm font-medium text-gray-700">
+            <label for="current_password" class="form-label">
                 Contraseña actual
             </label>
 
-            <input
-                type="password"
-                name="current_password"
-                class="mt-1 block w-full border-gray-300 rounded-md"
-            >
+            <input id="current_password" type="password" name="current_password" autocomplete="current-password" class="form-control">
 
             @error('current_password')
-                <p class="text-sm text-red-600">{{ $message }}</p>
+            <p class="form-error">{{ $message }}</p>
             @enderror
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-gray-700">
+            <label for="password" class="form-label">
                 Nueva contraseña
             </label>
 
-            <input
-                type="password"
-                name="password"
-                class="mt-1 block w-full border-gray-300 rounded-md"
-            >
+            <input id="password" type="password" name="password" autocomplete="new-password" class="form-control">
 
             @error('password')
-                <p class="text-sm text-red-600">{{ $message }}</p>
+            <p class="form-error">{{ $message }}</p>
             @enderror
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-gray-700">
+            <label for="password_confirmation" class="form-label">
                 Confirmar contraseña
             </label>
 
-            <input
-                type="password"
-                name="password_confirmation"
-                class="mt-1 block w-full border-gray-300 rounded-md"
-            >
+            <input id="password_confirmation" type="password" name="password_confirmation" autocomplete="new-password" class="form-control">
         </div>
 
-        <button
-            type="submit"
-            class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-        >
-            Guardar contraseña
-        </button>
+        @if(session('status') === 'password-updated')
+        <div class="alert-success">
+            Contraseña actualizada correctamente.
+        </div>
+        @endif
+
+        <div class="flex flex-col-reverse gap-3 border-t border-slate-200 pt-5 sm:flex-row sm:justify-end">
+            <button type="submit" class="btn-primary">
+                Guardar contraseña
+            </button>
+        </div>
     </form>
+
 </section>

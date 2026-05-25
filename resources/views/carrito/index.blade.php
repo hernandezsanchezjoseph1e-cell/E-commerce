@@ -1,32 +1,44 @@
 @extends('layouts.app')
 
-@section('title', 'Mi carrito')
+@section('title', 'Mi carrito | Tech & Home')
 
 @section('content')
 
-<div class="container mx-auto p-6">
+<div class="space-y-8">
 
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">
-            Mi carrito
-        </h1>
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+            <p class="text-sm font-semibold uppercase tracking-wide text-emerald-700">
+                Compra
+            </p>
 
-        <a href="{{ route('dashboard.cliente') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded">
+            <h1 class="mt-1 text-3xl font-bold tracking-tight text-slate-900">
+                Mi carrito
+            </h1>
+
+            <p class="mt-2 text-sm text-slate-500">
+                Revisa tus productos antes de confirmar la compra.
+            </p>
+        </div>
+
+        <a href="{{ route('dashboard.cliente') }}" class="btn-secondary w-full sm:w-auto">
             Seguir comprando
         </a>
     </div>
 
-    {{-- MENSAJE DE ÉXITO --}}
     @if(session('success'))
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+    <div class="alert-success">
         {{ session('success') }}
     </div>
     @endif
 
-    {{-- ERRORES --}}
     @if($errors->any())
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-        <ul class="list-disc ml-5">
+    <div class="alert-danger">
+        <p class="font-semibold">
+            Revisa los siguientes mensajes:
+        </p>
+
+        <ul class="mt-2 list-inside list-disc space-y-1">
             @foreach($errors->all() as $error)
             <li>{{ $error }}</li>
             @endforeach
@@ -36,154 +48,214 @@
 
     @if($productos->isEmpty())
 
-    <div class="bg-white shadow rounded p-6 text-center">
-        <p class="text-gray-600 mb-4">
-            Tu carrito está vacío.
-        </p>
+    <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <div class="px-6 py-12 text-center sm:px-8">
 
-        <a href="{{ route('dashboard.cliente') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-            Ver productos
-        </a>
-    </div>
+            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 4.5h2.25l2.25 10.5h8.25l2.25-7.5H7.5M9 19.5h.01M17.25 19.5h.01" />
+                </svg>
+            </div>
+
+            <h2 class="mt-5 text-xl font-bold text-slate-900">
+                Tu carrito está vacío
+            </h2>
+
+            <p class="mt-2 text-sm text-slate-500">
+                Explora el catálogo y agrega productos para iniciar tu compra.
+            </p>
+
+            <div class="mt-6">
+                <a href="{{ route('dashboard.cliente') }}" class="btn-primary">
+                    Ver productos
+                </a>
+            </div>
+
+        </div>
+    </section>
 
     @else
 
-    <div class="bg-white shadow rounded overflow-hidden mb-6">
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_380px]">
 
-        <table class="w-full border-collapse">
+        <section class="space-y-4">
 
-            <thead class="bg-gray-100 border-b">
-                <tr>
-                    <th class="p-3 text-left">Producto</th>
-                    <th class="p-3 text-left">Vendedor</th>
-                    <th class="p-3 text-right">Precio</th>
-                    <th class="p-3 text-center">Cantidad</th>
-                    <th class="p-3 text-right">Subtotal</th>
-                    <th class="p-3 text-center">Acciones</th>
-                </tr>
-            </thead>
+            @foreach($productos as $producto)
 
-            <tbody>
+            <article class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
 
-                @foreach($productos as $producto)
+                <div class="grid grid-cols-1 gap-5 p-5 sm:grid-cols-[112px_1fr] sm:p-6">
 
-                <tr class="border-b">
+                    <div>
+                        @php
+                        $fotoProducto = is_array($producto->fotos) ? ($producto->fotos[0] ?? null) : null;
+                        @endphp
 
-                    <td class="p-3">
-                        <div class="flex items-center gap-3">
+                        @if($fotoProducto)
+                        <img src="{{ asset('storage/' . $fotoProducto) }}" alt="{{ $producto->nombre }}" class="h-32 w-full rounded-2xl object-cover sm:h-28 sm:w-28">
+                        @else
+                        <div class="flex h-32 w-full items-center justify-center rounded-2xl bg-slate-100 text-xs font-medium text-slate-400 sm:h-28 sm:w-28">
+                            Sin imagen
+                        </div>
+                        @endif
+                    </div>
 
-                            @if($producto->fotos && count($producto->fotos) > 0)
-                            <img src="{{ asset('storage/' . $producto->fotos[0]) }}" alt="{{ $producto->nombre }}" class="w-16 h-16 object-cover rounded">
-                            @else
-                            <div class="w-16 h-16 bg-gray-200 rounded flex items-center justify-center text-gray-500 text-xs">
-                                Sin imagen
-                            </div>
-                            @endif
+                    <div class="min-w-0">
 
+                        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                             <div>
-                                <p class="font-semibold text-gray-800">
+                                <h2 class="text-lg font-bold text-slate-900">
                                     {{ $producto->nombre }}
+                                </h2>
+
+                                <p class="mt-1 text-sm text-slate-500">
+                                    Vendedor: {{ $producto->usuario->nombre ?? 'N/A' }}
                                 </p>
 
-                                <p class="text-sm text-gray-500">
+                                <p class="mt-1 text-sm text-slate-500">
                                     Stock disponible: {{ $producto->existencia }}
                                 </p>
                             </div>
 
+                            <div class="sm:text-right">
+                                <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                                    Precio
+                                </p>
+
+                                <p class="mt-1 text-lg font-bold text-slate-900">
+                                    ${{ number_format($producto->precio, 2) }}
+                                </p>
+                            </div>
                         </div>
-                    </td>
 
-                    <td class="p-3">
-                        {{ $producto->usuario->nombre ?? 'N/A' }}
-                    </td>
+                        <div class="mt-5 grid grid-cols-1 gap-4 border-t border-slate-100 pt-5 xl:grid-cols-[1fr_auto_auto] xl:items-center">
 
-                    <td class="p-3 text-right">
-                        ${{ number_format($producto->precio, 2) }}
-                    </td>
+                            <form action="{{ route('carrito.actualizar', $producto) }}" method="POST" class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                                @csrf
+                                @method('PATCH')
 
-                    <td class="p-3 text-center">
-                        <form action="{{ route('carrito.actualizar', $producto) }}" method="POST" class="flex justify-center items-center gap-2">
-                            @csrf
-                            @method('PATCH')
+                                <label for="cantidad-{{ $producto->id }}" class="text-sm font-semibold text-slate-700">
+                                    Cantidad
+                                </label>
 
-                            <input type="number" name="cantidad" min="1" max="{{ $producto->existencia }}" value="{{ $producto->cantidad_carrito }}" class="border rounded px-2 py-1 w-20 text-center">
+                                <input id="cantidad-{{ $producto->id }}" type="number" name="cantidad" min="1" max="{{ $producto->existencia }}" value="{{ $producto->cantidad_carrito }}" class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-center text-sm font-semibold text-slate-900 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 sm:w-24">
 
-                            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded">
-                                Actualizar
-                            </button>
-                        </form>
-                    </td>
+                                <button type="submit" class="btn-muted">
+                                    Actualizar
+                                </button>
+                            </form>
 
-                    <td class="p-3 text-right font-semibold">
-                        ${{ number_format($producto->subtotal_carrito, 2) }}
-                    </td>
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                                    Subtotal
+                                </p>
 
-                    <td class="p-3 text-center">
-                        <form action="{{ route('carrito.eliminar', $producto) }}" method="POST" onsubmit="return confirm('¿Eliminar este producto del carrito?')">
-                            @csrf
-                            @method('DELETE')
+                                <p class="mt-1 text-lg font-bold text-slate-900">
+                                    ${{ number_format($producto->subtotal_carrito, 2) }}
+                                </p>
+                            </div>
 
-                            <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
+                            <button type="button"
+                                data-confirm-button
+                                data-confirm-title="Eliminar producto"
+                                data-confirm-message="¿Seguro que deseas eliminar este producto del carrito?"
+                                data-confirm-action="{{ route('carrito.eliminar', $producto) }}"
+                                data-confirm-method="DELETE"
+                                data-confirm-text="Eliminar"
+                                data-confirm-variant="danger"
+                                class="btn-danger w-full xl:w-auto">
                                 Eliminar
                             </button>
-                        </form>
-                    </td>
 
-                </tr>
+                        </div>
 
-                @endforeach
+                    </div>
 
-            </tbody>
+                </div>
 
-        </table>
+            </article>
 
-    </div>
+            @endforeach
 
-    <div class="bg-white shadow rounded p-6">
+        </section>
 
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-xl font-bold text-gray-800">
-                Total
-            </h2>
+        <aside class="lg:sticky lg:top-6 lg:self-start">
 
-            <p class="text-2xl font-bold text-green-700">
-                ${{ number_format($total, 2) }}
-            </p>
-        </div>
+            <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
 
-        <form action="{{ route('carrito.comprar') }}" method="POST" enctype="multipart/form-data" class="mb-4">
-            @csrf
+                <div class="border-b border-slate-200 px-5 py-4 sm:px-6">
+                    <h2 class="text-lg font-bold text-slate-900">
+                        Resumen de compra
+                    </h2>
 
-            <div class="mb-4">
-                <label for="metodo_pago" class="block mb-1 font-semibold">
-                    Método de pago
-                </label>
+                    <p class="mt-1 text-sm text-slate-500">
+                        Selecciona el método de pago para continuar.
+                    </p>
+                </div>
 
-                <select id="metodo_pago" name="metodo_pago" class="border p-2 w-full rounded" required>
-                    <option value="">Seleccione un método de pago</option>
-                    <option value="oxxo">Pago en punto de venta / OXXO</option>
-                    <option value="transferencia">Transferencia bancaria</option>
-                    <option value="tarjeta">Tarjeta de crédito/débito</option>
-                </select>
+                <div class="space-y-5 p-5 sm:p-6">
 
-                @error('metodo_pago')
-                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                @enderror
-            </div>
+                    <div class="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-4">
+                        <span class="text-sm font-semibold text-slate-600">
+                            Total
+                        </span>
 
-            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
-                Confirmar compra
-            </button>
-        </form>
+                        <span class="text-2xl font-bold text-emerald-700">
+                            ${{ number_format($total, 2) }}
+                        </span>
+                    </div>
 
-        <form action="{{ route('carrito.vaciar') }}" method="POST" onsubmit="return confirm('¿Vaciar todo el carrito?')">
-            @csrf
-            @method('DELETE')
+                    <form action="{{ route('carrito.comprar') }}" method="POST" class="space-y-5" novalidate>
+                        @csrf
 
-            <button type="submit" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">
-                Vaciar carrito
-            </button>
-        </form>
+                        <div>
+                            <label for="metodo_pago" class="form-label">
+                                Método de pago
+                            </label>
+
+                            <select id="metodo_pago" name="metodo_pago" class="form-select">
+                                <option value="">Seleccione un método de pago</option>
+
+                                <option value="oxxo" {{ old('metodo_pago') === 'oxxo' ? 'selected' : '' }}>
+                                    Pago en punto de venta / OXXO
+                                </option>
+
+                                <option value="transferencia" {{ old('metodo_pago') === 'transferencia' ? 'selected' : '' }}>
+                                    Transferencia bancaria
+                                </option>
+
+                                <option value="tarjeta" {{ old('metodo_pago') === 'tarjeta' ? 'selected' : '' }}>
+                                    Tarjeta de crédito/débito
+                                </option>
+                            </select>
+
+                            @error('metodo_pago')
+                            <p class="form-error">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <button type="submit" class="btn-primary w-full">
+                            Confirmar compra
+                        </button>
+                    </form>
+
+                    <button type="button"
+                        data-confirm-button
+                        data-confirm-title="Vaciar carrito"
+                        data-confirm-message="¿Seguro que deseas eliminar todos los productos del carrito?"
+                        data-confirm-action="{{ route('carrito.vaciar') }}"
+                        data-confirm-method="DELETE"
+                        data-confirm-text="Vaciar carrito"
+                        data-confirm-variant="danger"
+                        class="btn-secondary w-full">
+                        Vaciar carrito
+                    </button>
+
+                </div>
+
+            </section>
+
+        </aside>
 
     </div>
 

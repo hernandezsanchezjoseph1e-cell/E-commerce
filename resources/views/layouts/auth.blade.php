@@ -6,31 +6,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Quessini')</title>
+    <title>@yield('title', 'Tech & Home')</title>
 
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans bg-gray-100">
+<body class="font-sans antialiased bg-slate-100 text-slate-900">
 
-<div class="min-h-screen flex flex-col justify-center items-center">
+    <main class="min-h-screen flex items-center justify-center px-4 py-10">
 
-    <div class="mb-6">
-        <a href="/">
-            <h1 class="text-3xl font-bold text-gray-800">
-                Quessini
-            </h1>
-        </a>
-    </div>
+        <div class="w-full max-w-md">
 
-    <div class="w-full max-w-md bg-white shadow-md rounded-lg p-6">
-        @yield('content')
-    </div>
+            <div class="mb-6 text-center">
+                <a href="/" class="inline-block">
+                    <h1 class="text-3xl font-bold tracking-tight text-slate-900">
+                        Tech & Home
+                    </h1>
 
-</div>
+                    <p class="mt-1 text-sm text-slate-500">
+                        Tecnología para tu hogar
+                    </p>
+                </a>
+            </div>
+
+            <section class="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-8">
+                @yield('content')
+            </section>
+
+        </div>
+
+    </main>
 
 </body>
 

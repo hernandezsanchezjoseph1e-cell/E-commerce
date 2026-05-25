@@ -1,85 +1,109 @@
 @extends('layouts.app')
 
+@section('title', 'Gestión de categorías | Tech & Home')
+
 @section('content')
 
-<div class="container mx-auto p-6">
+<div class="app-page">
 
-    <div class="flex justify-between mb-6">
-        <h1 class="text-2xl font-bold">Categorías</h1>
+    <div class="page-header">
+        <div>
+            <p class="page-kicker">
+                {{ auth()->user()->role === 'administrador' ? 'Administración' : 'Gerencia' }}
+            </p>
+
+            <h1 class="page-title">
+                Gestión de categorías
+            </h1>
+
+            <p class="page-description">
+                Consulta las categorías disponibles para clasificar los productos del sistema.
+            </p>
+        </div>
 
         @if(auth()->user()->role === 'gerente')
-        <a href="{{ route('categorias.create') }}"
-            class="bg-blue-500 text-white px-4 py-2 rounded">
-            Nuevo Categoria
+        <a href="{{ route('categorias.create') }}" class="btn-primary w-full sm:w-auto">
+            Nueva categoría
         </a>
         @endif
     </div>
 
-    <table class="w-full border border-gray-300">
+    <section class="table-wrapper">
 
-        <thead class="bg-gray-200">
-            <tr>
-                <th class="p-2">ID</th>
-                <th class="p-2">Nombre</th>
-                <th class="p-2">Descripción</th>
-                <th class="p-2">Acciones</th>
-            </tr>
-        </thead>
+        <div class="card-header">
+            <h2 class="card-title">
+                Categorías registradas
+            </h2>
 
-        <tbody>
+            <p class="card-description">
+                Listado general de categorías disponibles en Tech & Home.
+            </p>
+        </div>
 
-            @foreach($categorias as $categoria)
+        <div class="table-scroll">
+            <table class="data-table">
+                <thead class="data-thead">
+                    <tr>
+                        <th class="data-th">ID</th>
+                        <th class="data-th">Nombre</th>
+                        <th class="data-th">Descripción</th>
+                        <th class="data-th-right">Acciones</th>
+                    </tr>
+                </thead>
 
-            <tr class="border-t">
+                <tbody class="divide-y divide-slate-100 bg-white">
+                    @forelse($categorias as $categoria)
+                    <tr class="data-row">
+                        <td class="data-td">
+                            #{{ $categoria->id }}
+                        </td>
 
-                <td class="p-2">
-                    {{ $categoria->id }}
-                </td>
+                        <td class="data-td-strong">
+                            {{ $categoria->nombre }}
+                        </td>
 
-                <td class="p-2">
-                    {{ $categoria->nombre }}
-                </td>
+                        <td class="data-td">
+                            {{ $categoria->descripcion ?? 'Sin descripción' }}
+                        </td>
 
-                <td class="p-2">
-                    {{ $categoria->descripcion }}
-                </td>
+                        <td class="data-td">
+                            <div class="flex items-center justify-end gap-3">
 
-                <td class="p-2 flex gap-3">
+                                @if(auth()->user()->role === 'gerente')
+                                <a href="{{ route('categorias.edit', $categoria) }}" class="action-link">
+                                    Editar
+                                </a>
+                                @endif
 
-                    {{-- EDITAR SOLO GERENTE --}}
-                    @if(auth()->user()->role === 'gerente')
-                    <a href="{{ route('categorias.edit',$categoria) }}"
-                        class="text-blue-600">
-                        Editar
-                    </a>
-                    @endif
+                                @if(auth()->user()->role === 'administrador')
+                                <button type="button"
+                                    data-confirm-button
+                                    data-confirm-title="Eliminar categoría"
+                                    data-confirm-message="¿Seguro que deseas eliminar la categoría {{ $categoria->nombre }}?"
+                                    data-confirm-action="{{ route('categorias.destroy', $categoria) }}"
+                                    data-confirm-method="DELETE"
+                                    data-confirm-text="Eliminar"
+                                    data-confirm-variant="danger"
+                                    class="danger-link">
+                                    Eliminar
+                                </button>
+                                @endif
 
-                    {{-- ELIMINAR SOLO ADMIN --}}
-                    @if(auth()->user()->role === 'administrador')
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="4" class="table-empty">
+                            No hay categorías registradas.
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
-                    <form action="{{ route('categorias.destroy',$categoria) }}"
-                        method="POST">
-
-                        @csrf
-                        @method('DELETE')
-
-                        <button class="text-red-600">
-                            Eliminar
-                        </button>
-
-                    </form>
-
-                    @endif
-
-                </td>
-
-            </tr>
-
-            @endforeach
-
-        </tbody>
-
-    </table>
+    </section>
 
 </div>
 

@@ -1,83 +1,73 @@
 @extends('layouts.auth')
 
+@section('title', 'Iniciar sesión')
+
 @section('content')
 
-<div class="max-w-md mx-auto mt-10 bg-white p-6 rounded shadow">
+<div class="space-y-6">
 
-    <h2 class="text-2xl font-semibold text-center mb-6">
-        Iniciar sesión
-    </h2>
+    <div class="text-center">
+        <h2 class="text-2xl font-bold text-slate-900">
+            Iniciar sesión
+        </h2>
+
+        <p class="mt-2 text-sm text-slate-500">
+            Accede a tu cuenta para continuar.
+        </p>
+    </div>
 
     @if(session('status'))
-        <div class="mb-4 text-green-600 text-sm">
-            {{ session('status') }}
-        </div>
+    <div class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+        {{ session('status') }}
+    </div>
     @endif
 
-    <form method="POST" action="{{ route('login') }}">
+    <form method="POST" action="{{ route('login') }}" class="space-y-5">
         @csrf
 
-        <!-- Email -->
-        <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700">
-                Email
+        <div>
+            <label for="email" class="block text-sm font-semibold text-slate-700">
+                Correo electrónico
             </label>
 
-            <input
-                type="email"
-                name="email"
-                value="{{ old('email') }}"
-                class="mt-1 w-full border-gray-300 rounded-md shadow-sm"
-                required
-            >
+            <input id="email" type="email" name="email" value="{{ old('email') }}" autocomplete="email" required autofocus class="mt-2 w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500">
 
             @error('email')
-                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
             @enderror
         </div>
 
-        <!-- Password -->
-        <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700">
+        <div>
+            <label for="password" class="block text-sm font-semibold text-slate-700">
                 Contraseña
             </label>
 
-            <input
-                type="password"
-                name="password"
-                class="mt-1 w-full border-gray-300 rounded-md shadow-sm"
-                required
-            >
+            <input id="password" type="password" name="password" autocomplete="current-password" required class="mt-2 w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm shadow-sm focus:border-emerald-500 focus:ring-emerald-500">
 
             @error('password')
-                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
             @enderror
         </div>
 
-        <!-- Remember -->
-        <div class="flex items-center mb-4">
-            <input type="checkbox" name="remember" class="mr-2">
-            <span class="text-sm text-gray-600">Recordarme</span>
+        <div class="flex items-center justify-between gap-4">
+            <label class="inline-flex items-center gap-2 text-sm text-slate-600">
+                <input type="checkbox" name="remember" class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500">
+
+                <span>
+                    Recordarme
+                </span>
+            </label>
+
+            @if(Route::has('password.request'))
+            <a href="{{ route('password.request') }}" class="text-sm font-semibold text-emerald-700 hover:text-emerald-800 hover:underline">
+                ¿Olvidaste tu contraseña?
+            </a>
+            @endif
         </div>
 
-        <button
-            type="submit"
-            class="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
-        >
+        <button type="submit" class="w-full rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/20">
             Iniciar sesión
         </button>
-
-        @if(Route::has('password.request'))
-            <div class="mt-4 text-center">
-                <a
-                    href="{{ route('password.request') }}"
-                    class="text-sm text-indigo-600 hover:underline"
-                >
-                    ¿Olvidaste tu contraseña?
-                </a>
-            </div>
-        @endif
-
     </form>
 
 </div>

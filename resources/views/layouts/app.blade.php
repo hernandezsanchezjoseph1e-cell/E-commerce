@@ -6,47 +6,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Quessini')</title>
+    <title>@yield('title', 'Tech & Home')</title>
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
 
-    <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased bg-gray-100">
+<body class="font-sans antialiased bg-slate-100 text-slate-900">
+
     @auth
+    @switch(auth()->user()->role)
+    @case('administrador')
+    @include('layouts.navbars.administrador')
+    @break
 
-    @php($user = auth()->user())
+    @case('gerente')
+    @include('layouts.navbars.gerente')
+    @break
 
-    @if($user->role === 'administrador')
-        @include('layouts.navbars.administrador')
-
-    @elseif($user->role === 'gerente')
-        @include('layouts.navbars.gerente')
-
-    @elseif($user->role === 'cliente')
-        @include('layouts.navbars.cliente')
-    @endif
-
+    @case('cliente')
+    @include('layouts.navbars.cliente')
+    @break
+    @endswitch
     @endauth
-    
+
     <div class="min-h-screen">
 
-    @hasSection('header')
-        <header class="bg-white shadow">
-            <div class="max-w-7xl mx-auto py-6 px-4">
+        @hasSection('header')
+        <header class="border-b border-slate-200 bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                 @yield('header')
             </div>
         </header>
-    @endif
+        @endif
 
-    <main class="max-w-7xl mx-auto py-6 px-4">
-        @yield('content')
-    </main>
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            @yield('content')
+        </main>
 
-</div>
+    </div>
+
+    <x-confirm-modal />
+
 </body>
+
 </html>

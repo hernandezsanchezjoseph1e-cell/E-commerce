@@ -1,48 +1,48 @@
 @extends('layouts.auth')
 
+@section('title', 'Verificar correo | Tech & Home')
+
 @section('content')
 
-<div class="max-w-md mx-auto mt-10 bg-white p-6 rounded shadow">
-
-    <h2 class="text-2xl font-semibold text-center mb-6">
-        Verificar Email
-    </h2>
-
-    <p class="text-center text-gray-600 mb-6">
-        Antes de continuar, por favor verifica tu dirección de email haciendo clic en el enlace que te hemos enviado.
-    </p>
-
-    @if (session('resent'))
-        <div class="mb-4 text-green-600 text-sm text-center">
-            Se ha enviado un nuevo enlace de verificación a tu dirección de email.
-        </div>
-    @endif
+<div class="space-y-6">
 
     <div class="text-center">
-        <form method="POST" action="{{ route('verification.send') }}">
-            @csrf
+        <h2 class="text-2xl font-bold text-slate-900">
+            Verificar correo
+        </h2>
 
-            <button
-                type="submit"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-            >
-                Reenviar Email de Verificación
-            </button>
-        </form>
+        <p class="mt-2 text-sm text-slate-500">
+            Antes de continuar, verifica tu dirección de correo electrónico.
+        </p>
     </div>
 
-    <div class="mt-6 text-center">
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-
-            <button
-                type="submit"
-                class="text-sm text-gray-600 hover:text-gray-900"
-            >
-                Cerrar Sesión
-            </button>
-        </form>
+    <div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-4">
+        <p class="text-sm leading-6 text-slate-600">
+            Te enviamos un enlace de verificación. Revisa tu bandeja de entrada y confirma tu correo para poder acceder al sistema.
+        </p>
     </div>
+
+    @if(session('resent') || session('status') === 'verification-link-sent')
+    <div class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+        Se ha enviado un nuevo enlace de verificación a tu dirección de correo.
+    </div>
+    @endif
+
+    <form method="POST" action="{{ route('verification.send') }}">
+        @csrf
+
+        <button type="submit" class="w-full rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/20">
+            Reenviar correo de verificación
+        </button>
+    </form>
+
+    <form method="POST" action="{{ route('logout') }}">
+        @csrf
+
+        <button type="submit" class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+            Cerrar sesión
+        </button>
+    </form>
 
 </div>
 

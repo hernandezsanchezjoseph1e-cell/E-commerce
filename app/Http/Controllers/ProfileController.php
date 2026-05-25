@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProfileDestroyRequest;
+use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+
 
 class ProfileController extends Controller
 {
@@ -21,34 +24,34 @@ class ProfileController extends Controller
     /**
      * Actualizar perfil
      */
-    public function update(Request $request)
+    public function update(ProfileUpdateRequest $request)
     {
         $user = $request->user();
 
-        $data = $request->validate([
-            'nombre' => 'required|string|max:255',
-            'apellidos' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
+        $user->update($request->validated());
+
+        return back()->with('success', 'Perfil actualizado correctamente.');
+    }
+
+    /**
+     * Actualizar contraseña
+     */
+    public function updatePassword(ProfileUpdateRequest $request)
+    {
+        $user = $request->user();
+
+        $user->update([
+            'password' => Hash::make($request->validated()['password']),
         ]);
 
-        if ($user->email !== $data['email']) {
-            $user->email_verified_at = null;
-        }
-
-        $user->update($data);
-
-        return back()->with('success', 'Perfil actualizado.');
+        return back()->with('status', 'password-updated');
     }
 
     /**
      * Eliminar cuenta
      */
-    public function destroy(Request $request)
+    public function destroy(ProfileDestroyRequest $request)
     {
-        $request->validate([
-            'password' => ['required','current_password']
-        ]);
-
         $user = $request->user();
 
         Auth::logout();

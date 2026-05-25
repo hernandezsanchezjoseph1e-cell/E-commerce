@@ -22,4 +22,18 @@ class Categoria extends Model
             'producto_id'
         );
     }
+
+    public static function paraDashboardCliente()
+    {
+        return self::query()
+            ->with([
+                'productos' => function ($query) {
+                    $query->with('usuario')
+                        ->disponibles()
+                        ->orderBy('nombre');
+                },
+            ])
+            ->orderBy('nombre')
+            ->get();
+    }
 }

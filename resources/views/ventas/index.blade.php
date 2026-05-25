@@ -1,120 +1,134 @@
 @extends('layouts.app')
 
+@section('title', 'Ventas registradas | Tech & Home')
+
 @section('content')
 
-<div class="container mx-auto p-6">
+<div class="app-page">
 
-    <div class="flex justify-between mb-6">
+    <div class="page-header">
+        <div>
+            <p class="page-kicker">
+                {{ auth()->user()->role === 'administrador' ? 'Administración' : 'Gerencia' }}
+            </p>
 
-        <h1 class="text-2xl font-bold">Ventas registradas</h1>
+            <h1 class="page-title">
+                Ventas registradas
+            </h1>
+
+            <p class="page-description">
+                Consulta las ventas confirmadas y agrupadas por referencia de pago.
+            </p>
+        </div>
 
         @if(auth()->user()->role === 'gerente')
-        <a href="{{ route('ventas.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded">
+        <a href="{{ route('ventas.create') }}" class="btn-primary w-full sm:w-auto">
             Ventas pendientes
         </a>
         @endif
-
     </div>
 
     @if(session('success'))
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+    <div class="alert-success">
         {{ session('success') }}
     </div>
     @endif
 
-    @php
-    $ventasAgrupadas = $ventas->groupBy(function ($venta) {
-    return $venta->referencia_pago ?? 'SIN_REFERENCIA_' . $venta->id;
-    });
-    @endphp
+    <section class="table-wrapper">
 
-    <table class="w-full border">
+        <div class="card-header">
+            <h2 class="card-title">
+                Historial de ventas
+            </h2>
 
-        <thead class="bg-gray-200">
-            <tr>
-                <th class="p-2">Referencia</th>
-                <th class="p-2">Productos</th>
-                <th class="p-2">Cliente</th>
-                <th class="p-2">Vendedor</th>
-                <th class="p-2">Fecha</th>
-                <th class="p-2">Total</th>
-                <th class="p-2">Estado</th>
-            </tr>
-        </thead>
+            <p class="card-description">
+                Cada fila representa una compra agrupada por referencia de pago.
+            </p>
+        </div>
 
-        <tbody>
+        <div class="table-scroll">
+            <table class="data-table-lg">
+                <thead class="data-thead">
+                    <tr>
+                        <th class="data-th">Referencia</th>
+                        <th class="data-th">Productos</th>
+                        <th class="data-th">Cliente</th>
+                        <th class="data-th">Vendedor</th>
+                        <th class="data-th">Fecha</th>
+                        <th class="data-th">Total</th>
+                        <th class="data-th">Estado</th>
+                    </tr>
+                </thead>
 
-            @forelse($ventasAgrupadas as $referencia => $grupoVentas)
+                <tbody class="divide-y divide-slate-100 bg-white">
+                    @forelse($ventasAgrupadas as $grupo)
+                    <tr class="data-row">
+                        <td class="data-td">
+                            <span class="font-mono text-sm font-semibold text-slate-900">
+                                {{ $grupo['venta_base']->referencia_pago ?? 'Sin referencia' }}
+                            </span>
+                        </td>
 
-            @php
-            $ventaBase = $grupoVentas->first();
-            $total = $grupoVentas->sum('total');
-            @endphp
+                        <td class="data-td">
+                            <div class="space-y-3">
+                                @foreach($grupo['ventas'] as $venta)
+                                <div>
+                                    <p class="font-medium text-slate-900">
+                                        {{ $venta->producto->nombre }}
+                                    </p>
 
-            <tr class="border-t">
+                                    <p class="mt-1 text-xs text-slate-500">
+                                        Cantidad: {{ $venta->cantidad }} · ${{ number_format($venta->total, 2) }}
+                                    </p>
+                                </div>
+                                @endforeach
+                            </div>
+                        </td>
 
-                <td class="p-2 font-semibold">
-                    {{ $ventaBase->referencia_pago ?? 'Sin referencia' }}
-                </td>
+                        <td class="data-td">
+                            <p class="font-medium text-slate-900">
+                                {{ $grupo['venta_base']->cliente->nombre }} {{ $grupo['venta_base']->cliente->apellidos }}
+                            </p>
+                        </td>
 
-                <td class="p-2">
-                    @foreach($grupoVentas as $venta)
-                    <div class="mb-1">
-                        <div>
-                            {{ $venta->producto->nombre }}
-                            x{{ $venta->cantidad }}
-                        </div>
+                        <td class="data-td">
+                            <p class="font-medium text-slate-900">
+                                {{ $grupo['venta_base']->vendedor->nombre }} {{ $grupo['venta_base']->vendedor->apellidos }}
+                            </p>
+                        </td>
 
-                        <div class="text-sm text-gray-500">
-                            ${{ number_format($venta->total, 2) }}
-                        </div>
-                    </div>
-                    @endforeach
-                </td>
+                        <td class="data-td">
+                            {{ $grupo['venta_base']->fecha->format('d/m/Y') }}
+                        </td>
 
-                <td class="p-2">
-                    {{ $ventaBase->cliente->nombre }} {{ $ventaBase->cliente->apellidos }}
-                </td>
+                        <td class="data-td-strong">
+                            ${{ number_format($grupo['total'], 2) }}
+                        </td>
 
-                <td class="p-2">
-                    {{ $ventaBase->vendedor->nombre }} {{ $ventaBase->vendedor->apellidos }}
-                </td>
+                        <td class="data-td">
+                            @if($grupo['registrada'])
+                            <span class="badge-success">
+                                Registrada
+                            </span>
+                            @else
+                            <span class="badge-warning">
+                                Pendiente
+                            </span>
+                            @endif
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7" class="table-empty">
+                            No hay ventas registradas.
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
-                <td class="p-2">
-                    {{ $ventaBase->fecha->format('d/m/Y') }}
-                </td>
-
-                <td class="p-2 font-semibold">
-                    ${{ number_format($total, 2) }}
-                </td>
-
-                <td class="p-2">
-                    @if($grupoVentas->every(fn($venta) => $venta->validada))
-                    <span class="text-green-700 font-bold">
-                        ✔ Registrada
-                    </span>
-                    @else
-                    <span class="text-yellow-700 font-bold">
-                        Pendiente
-                    </span>
-                    @endif
-                </td>
-
-            </tr>
-
-            @empty
-
-            <tr>
-                <td colspan="7" class="p-4 text-center text-gray-500">
-                    No hay ventas registradas.
-                </td>
-            </tr>
-
-            @endforelse
-
-        </tbody>
-
-    </table>
+    </section>
 
 </div>
 

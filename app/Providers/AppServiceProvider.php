@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\View;
 use App\Models\User;
 
 class AppServiceProvider extends ServiceProvider
@@ -33,5 +34,10 @@ class AppServiceProvider extends ServiceProvider
             fn(User $user) =>
             $user->role === 'cliente'
         );
+
+        View::composer('layouts.navbars.cliente', function ($view) {
+            $cantidadCarrito = collect(session('carrito', []))->sum('cantidad');
+            $view->with('cantidadCarrito', $cantidadCarrito);
+        });
     }
 }
